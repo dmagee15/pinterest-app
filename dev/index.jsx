@@ -114,7 +114,6 @@ class App extends React.Component{
            <div>
             <Router>
             <div>
-                <Header store={this.props}/>
                 <Route exact path='/' component={Home}/>
                 <Route exact path='/signup' render={(props) => (
                     <SignUp store={this.props}/>
