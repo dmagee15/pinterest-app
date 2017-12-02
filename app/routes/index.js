@@ -3,7 +3,7 @@
 var path = process.cwd();
 var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
 var User = require('../models/users');
-var Book = require('../models/books');
+var Image = require('../models/images');
 
 module.exports = function (app, passport, googleBooks) {
 //User.find({}).remove().exec();
@@ -26,18 +26,11 @@ module.exports = function (app, passport, googleBooks) {
 	app.post('/createnewuser', passport.authenticate('local-signup',{ failureRedirect: '/signupfail', failureFlash: false }), function(req,res){
 		console.log("authentication successful");
 		console.log(req.body.email);
-		User.findOneAndUpdate({'local.username':req.body.username},{'local.email':req.body.email,'local.city':req.body.city,'local.state':req.body.state,'local.fullName':req.body.fullName},{new:true}, function(err,data){
+		User.findOneAndUpdate({'local.username':req.body.username},{'local.email':req.body.email},{new:true}, function(err,data){
 			if(err)throw err;
 			var userData = {
 				email: data.local.email,
-				city: data.local.city,
-				state: data.local.state,
-				fullName: data.local.fullName,
-				about: data.local.about,
-				username: data.local.username,
-				tradeRequestsForYou: data.local.tradeRequestsForYou,
-				tradeRequests: data.local.tradeRequests,
-				myBooks: data.local.myBooks
+				username: data.local.username
 			};
 			console.log("USER DATA: "+JSON.stringify(userData));
 			res.send(userData);
@@ -51,14 +44,7 @@ module.exports = function (app, passport, googleBooks) {
 			console.log(JSON.stringify(data));
 			var userData = {
 				email: req.user.local.email,
-				city: req.user.local.city,
-				state: req.user.local.state,
-				fullName: req.user.local.fullName,
-				about: req.user.local.about,
 				username: req.user.local.username,
-				tradeRequestsForYou: req.user.local.tradeRequestsForYou,
-				tradeRequests: req.user.local.tradeRequests,
-				myBooks: req.user.local.myBooks
 			};
 			console.log("USER DATA: "+JSON.stringify(req.user));
 			res.send(userData);

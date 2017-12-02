@@ -6,7 +6,7 @@ import { BrowserRouter as Router, withRouter, Route, Switch, Link, IndexRoute, R
 import ReactRedux, {connect, Provider} from 'react-redux';
 import Redux, {createStore, bindActionCreators} from 'redux';
 import Home from "./components/Home.js";
-import SignUp from "./components/SignUp.js";
+import Main from "./components/Main.js";
 import Login from "./components/Login.js";
 import Header from "./components/Header.js";
 import Profile from "./components/Profile.js";
@@ -17,13 +17,7 @@ const ADD = 'ADD';
 const initialState = {
     authenticated: false,
 	username: '',
-	city: '',
-	state: '',
-	fullName: '',
-	about: '',
-	tradeRequestsForYou: [],
-	tradeRequests: [],
-	myBooks: []
+	email: ''
 };
 
 const loginUser = (user) => {
@@ -45,25 +39,13 @@ const messageReducer = (state = initialState, action) => {
         return Object.assign({}, state, {
         authenticated: true,
 		username: action.user.username,
-	    city: action.user.city,
-	    state: action.user.state,
-	    fullName: action.user.fullName,
-	    about: action.user.about,
-	    tradeRequestsForYou: action.user.tradeRequestsForYou,
-	    tradeRequests: action.user.tradeRequests,
-	    myBooks: action.user.myBooks
+	    email: action.user.email,
     });
     case 'LOGOUT':
         return Object.assign({}, state, {
         authenticated: false,
 		username: '',
-	    city: '',
-	    state: '',
-	    fullName: '',
-	    about: '',
-	    tradeRequestsForYou: [],
-	    tradeRequests: [],
-	    myBooks: []
+	    email: '',
     });
     default:
       return state;
@@ -114,9 +96,9 @@ class App extends React.Component{
            <div>
             <Router>
             <div>
-                <Route exact path='/' component={Home}/>
-                <Route exact path='/signup' render={(props) => (
-                    <SignUp store={this.props}/>
+                <Route exact path='/' component={Main}/>
+                <Route exact path='/main' render={(props) => (
+                    <Main store={this.props}/>
                 )} />
                 <Route exact path='/profile' render={(props) => (
                     <Profile store={this.props}/>

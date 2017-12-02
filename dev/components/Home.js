@@ -67,6 +67,9 @@ class Welcome extends React.Component{
         usernameInput: '',
         passwordInput: '',
         loginForm: true,
+        usernameSignupInput: '',
+        passwordSignupInput: '',
+        emailSignupInput: ''
         }
     }
     handleUsernameChange = (event) => {
@@ -77,6 +80,21 @@ class Welcome extends React.Component{
     handlePasswordChange = (event) => {
         this.setState({
             passwordInput: event.target.value
+        });
+    }
+    handleUsernameSignupChange = (event) => {
+        this.setState({
+            usernameSignupInput: event.target.value
+        });
+    }
+    handlePasswordSignupChange = (event) => {
+        this.setState({
+            passwordSignupInput: event.target.value
+        });
+    }
+    handleEmailSignupChange = (event) => {
+        this.setState({
+            emailSignupInput: event.target.value
         });
     }
     handleLoginButton = () => {
@@ -293,21 +311,22 @@ class Welcome extends React.Component{
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-user-5-48.png" />
                         </div>
-                        <input style={inputStyle} type="text" placeholder="Username" value={this.state.usernameInput} onChange={this.handleUsernameChange}/>
+                        <input style={inputStyle} type="text" placeholder="Username" value={this.state.usernameSignupInput} onChange={this.handleUsernameSignupChange}/>
                     </div>
                     <div>
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-lock-3-48.png" />
                         </div>
-                        <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordInput} onChange={this.handlePasswordChange}/>
+                        <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordSignupInput} onChange={this.handlePasswordSignupChange}/>
+                    </div>
+                    <div>
+                        <div style={iconDivStyle}>
+                            <img style={iconStyle} src="/output/iconmonstr-email-1-48.png" />
+                        </div>
+                        <input style={inputStyle} type="text" placeholder="Email" value={this.state.emailSignupInput} onChange={this.handleEmailSignupChange}/>
                     </div>
                     <div style={loginButtonDiv}>
-                        <button style={loginButtonStyle}>Login</button>
-                        <button style={twitterButtonStyle}>Login with Twitter</button>
-                    </div>
-                    <div style={guestDivStyle}>
-                    <hr style={hrStyle}/>
-                    <p style={guestpStyle}>Or browse images as a <span style={guestStyle}>Guest</span></p>
+                        <button style={loginButtonStyle}>Sign Up</button>
                     </div>
             </div>
 
