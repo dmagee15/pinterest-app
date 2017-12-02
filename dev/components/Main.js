@@ -14,7 +14,7 @@ class Main extends React.Component{
 
             return (
                <div>
-                    <Header />
+                    <Header store={this.props.store}/>
                     <ImageBoard />
                </div>
           ); 
@@ -34,7 +34,10 @@ class Header extends React.Component{
 					width: '100%',
 					minHeight: 50,
 					backgroundColor:'#F7F7F7',
-					overflow: 'hidden'
+					overflow: 'hidden',
+					position: 'fixed',
+					zIndex: 1,
+					top: 0
 					};
 		var loggedStyle = {
 		    float: 'right',
@@ -84,7 +87,11 @@ class Header extends React.Component{
             <HoverButton float='left' text='Home' address="/"/>
             <input type="text" placeholder="Search Images..." style={searchInputStyle}/>
             <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png"/></button>
-            <HoverButton float='right' text='Login' address="login"/>
+            {(this.props.store.user.authenticated==true)?(
+                <PersonalButton float='right' text={this.props.store.user.username} address="login"/>
+            ):(
+                <HoverButton float='right' text='Login' address="login"/>
+            )}
           </div>
           ); 
 					
@@ -122,11 +129,62 @@ class HoverButton extends React.Component{
 		    float: this.props.float,
 		    background: this.state.hover?'lightblue':'none',
             border:'none',
-            margin: '0px 35px 0px 35px'
+            margin: '0px 35px 0px 35px',
+            fontFamily: 'Arial Black'
 		};
     
         return(
             <Link to={this.props.address}><button style={hoverButtonStyle} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}>{this.props.text}</button></Link>
+        );
+    }
+}
+
+class PersonalButton extends React.Component{
+    constructor(props) {
+    super(props);
+    this.state = {
+        hover: false
+        };
+    }
+    getInitialState = () => {
+        return {hover: false};
+    }
+    
+    mouseOver = () => {
+        this.setState({hover: true});
+    }
+    
+    mouseOut = () => {
+        this.setState({hover: false});
+    }
+    
+    
+    
+    render() {
+        
+        var hoverButtonStyle = {
+		    height: 50,
+		    color: 'darkslateblue',
+		    float: this.props.float,
+		    background: this.state.hover?'lightblue':'none',
+            border:'none',
+            margin: '0px 35px 0px 35px'
+		};
+        var iconStyle = {
+	    height: 20,
+	    width: 20,
+	    margin: '0px 10px 0px 0px',
+	    verticalAlign: 'middle'
+	    };
+	    var buttonTextStyle = {
+	        display:'inline-block',
+	        fontFamily: 'Arial Black'
+	    }
+        return(
+            <Link to={this.props.address}>
+            
+            <button style={hoverButtonStyle} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}><img style={iconStyle} src="/output/iconmonstr-user-5-48.png" />
+            <p style={buttonTextStyle}>{this.props.text}</p></button></Link>
         );
     }
 }
@@ -205,7 +263,8 @@ class ImageBoard extends React.Component{
             
             var divStyle = {
                 width: '100%',
-                height: '100vh'
+                height: '100vh',
+                paddingTop: 60
             }
             return (
                <div style={divStyle}>
@@ -244,14 +303,18 @@ class Image extends React.Component{
             position: 'relative'
         }
         var titleStyle = {
-            display: 'inline-block',
             width:'100%',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             margin: 0,
             padding: 0,
-            fontFamily: 'Arial'
+            fontFamily: 'Arial',
+            fontSize: 15
+        };
+        var titleContainerStyle = {
+            width: '100%',
+            textAlign: 'center'
         }
         var divStyle = {
             display: 'inline-block',
@@ -259,7 +322,7 @@ class Image extends React.Component{
             margin: "10px 10px 10px 10px",
             padding:0,
             verticalAlign: 'top',
-            boxShadow: '2px 2px 1px 1px #888888',
+            boxShadow: '1px 1px 0px 0px #888888',
             overflow: 'hidden',
             overflowX: 'hidden',
             borderRadius: 5
@@ -281,7 +344,7 @@ class Image extends React.Component{
         var divContentStyle = {
             width: '100%',
             margin: 0,
-            padding: 0
+            padding: 0,
         }
         var subtextStyle = {
             color: '#D8D8D8',
@@ -308,7 +371,37 @@ class Image extends React.Component{
             fontSize: 18,
             fontWeight: 900
         };
-        
+        var searchButtonStyle = {
+		    display:'inline-block',
+		    margin: '5px 0px 0px 10px',
+		    padding: 0,
+		    height: 25,
+		    border: 'none',
+		    backgroundColor: 'white',
+		    overflow: 'hidden',
+		    fontFamily: 'Arial',
+		    color: 'darkslateblue',
+		    fontSize: 13
+		};
+		var searchIconStyle = {
+		    height: 25,
+		    width: 25,
+		    display: 'inline-block',
+		    margin: 'auto auto auto auto',
+		    overflow: 'hidden'
+		};
+		var numPinsStyle = {
+		    display:'inline-block',
+		    fontSize: 15,
+		    fontFamily: 'Tahoma',
+		    verticalAlign: 'top',
+		    margin: '5px 0 0 5px',
+		}
+        var pinSectionStyle = {
+            display:'inline-block',
+            float:'right',
+            marginRight: 10
+        };
 
             return (
                 <div style={divStyle} className="grid-item">
@@ -316,8 +409,15 @@ class Image extends React.Component{
                     <img src={this.props.url} style={imgStyle} />
                 </div>
                 <div style={divContentStyle}>
+                    <div style={titleContainerStyle}>
                     <h3 style={titleStyle}>Title</h3>
-                    <p style={subtextStyle}>Owner:</p>
+                    </div>
+                    <button style={searchButtonStyle}>KyleCal33</button>
+
+                    <div style={pinSectionStyle}>
+                    <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></button>
+                    <p style={numPinsStyle}>25</p>
+                    </div>
                 </div>
             </div>
                 );

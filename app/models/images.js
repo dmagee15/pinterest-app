@@ -8,8 +8,6 @@ var Image = new Schema({
         source: String,
         username: String,
         pinusers: Array,
-        likes: Number,
-        dislikes: Number
 });
 
 module.exports = mongoose.model('Image', Image);

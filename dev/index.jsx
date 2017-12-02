@@ -76,27 +76,16 @@ const store = createStore(messageReducer);
 class App extends React.Component{
     constructor(props) {
     super(props);
-    
-    fetch('/logstatus', {
-        method: 'GET',
-        credentials: 'include'
-        }).then(function(data) {
-            return data.json();
-        }).then((j) =>{
-            console.log(j);
-            if(j!=false){
-              this.props.loginUser(j);
-            }
-        });
     }
-    
    render(){
             console.log(this.props);
             return (
            <div>
             <Router>
             <div>
-                <Route exact path='/' component={Main}/>
+                <Route exact path='/' render={(props) => (
+                    <Home store={this.props}/>
+                )} />
                 <Route exact path='/main' render={(props) => (
                     <Main store={this.props}/>
                 )} />

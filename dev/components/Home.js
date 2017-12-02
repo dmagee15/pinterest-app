@@ -1,25 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter as Router, withRouter, Route, Switch, Link, IndexRoute, Redirect} from 'react-router-dom';
+import ReactRedux, {connect, Provider} from 'react-redux';
+import Redux, {createStore, bindActionCreators} from 'redux';
 
 class Home extends React.Component{
-    constructor(props) {
-    super(props);
-    }
-    
-   render(){
-
-            return (
-               <div>
-                    <HomeMain/>
-               </div>
-          ); 
-					
-   }
-      
-   
-}
-
-class HomeMain extends React.Component{
     constructor(props) {
     super(props);
     }
@@ -51,14 +36,13 @@ class HomeMain extends React.Component{
                     <div style={divStyle}>
                     </div>
                 </div>
-                <Welcome />
+                <Welcome store={this.props.store}/>
                 </div>
           ); 
 					
    }
-      
-   
 }
+
 
 class Welcome extends React.Component{
     constructor(props) {
@@ -71,6 +55,66 @@ class Welcome extends React.Component{
         passwordSignupInput: '',
         emailSignupInput: ''
         }
+    }
+    loginGuest = (history) => {
+
+        history.push('/main');
+    }
+
+
+    loginAccount = (history) => {
+        
+        fetch('/login', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"username":this.state.usernameInput,
+            "password":this.state.passwordInput
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log('pushing to homepage');
+            if(Object.keys(j).length === 0){
+                console.log('fail');
+                this.setState({fail:true});
+            }
+            else{
+                console.log(j);
+                this.props.store.loginUser(j);
+                console.log(this.props);
+                history.push('/main');
+            }
+
+        });
+
+    }
+    createAccount = (history) => {
+        
+        fetch('/createnewuser', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"username":this.state.usernameSignupInput,
+            "password":this.state.passwordSignupInput,
+            "email":this.state.emailSignupInput
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            if(Object.keys(j).length === 0){
+                console.log('fail');
+                this.setState({fail:true});
+            }
+            else{
+            console.log('pushing to homepage');
+            console.log(j);
+            this.props.store.loginUser(j);
+            console.log(this.props);
+            history.push('/main');
+            }
+        });
+
     }
     handleUsernameChange = (event) => {
         this.setState({
@@ -285,7 +329,9 @@ class Welcome extends React.Component{
                         <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordInput} onChange={this.handlePasswordChange}/>
                     </div>
                     <div style={loginButtonDiv}>
-                        <button style={loginButtonStyle}>Login</button>
+                    <Route render={({ history}) => (
+                        <button style={loginButtonStyle} onClick={() => this.loginAccount(history)}>Login</button>
+                    )}/>
                         <button style={twitterButtonStyle}>Login with Twitter</button>
                     </div>
                     <div style={guestDivStyle}>
@@ -326,7 +372,9 @@ class Welcome extends React.Component{
                         <input style={inputStyle} type="text" placeholder="Email" value={this.state.emailSignupInput} onChange={this.handleEmailSignupChange}/>
                     </div>
                     <div style={loginButtonDiv}>
-                        <button style={loginButtonStyle}>Sign Up</button>
+                        <Route render={({ history}) => (
+                        <button style={loginButtonStyle} onClick={() => this.createAccount(history)}>Sign Up</button>
+                        )}/>
                     </div>
             </div>
 
