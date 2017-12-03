@@ -88,7 +88,10 @@ class Header extends React.Component{
             <input type="text" placeholder="Search Images..." style={searchInputStyle}/>
             <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png"/></button>
             {(this.props.store.user.authenticated==true)?(
+            <div style={{display:'inline-block', float:'right'}}>
+                <HoverButton float='right' text='Logout' address="login"/>
                 <PersonalButton float='right' text={this.props.store.user.username} address="login"/>
+            </div>
             ):(
                 <HoverButton float='right' text='Login' address="login"/>
             )}
@@ -245,6 +248,7 @@ class ImageBoard extends React.Component{
    render(){
             var images =
                 <div>
+                    <BoardInfoMenu />
                     <Image url="http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg"/>
                     <Image url="https://img.memecdn.com/you-cant-explain-that_o_275514.jpg"/>
                     <Image url="https://img.memecdn.com/you-cant-explain-that-my-first-meme_o_271120.jpg"/>
@@ -278,11 +282,176 @@ class ImageBoard extends React.Component{
                 >
                     {images}
                 </Masonry>
+                <AddImage />
                </div>
           ); 
 					
    }
       
+}
+class AddImage extends React.Component{
+    constructor(props) {
+    super(props);
+    this.state = {
+        urlInput: '',
+        titleInput: '',
+        }
+    }
+
+    createAccount = (history) => {
+        
+        fetch('/createnewuser', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"username":this.state.usernameSignupInput,
+            "password":this.state.passwordSignupInput,
+            "email":this.state.emailSignupInput
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            if(Object.keys(j).length === 0){
+                console.log('fail');
+                this.setState({fail:true});
+            }
+            else{
+            console.log('pushing to homepage');
+            console.log(j);
+            this.props.store.loginUser(j);
+            console.log(this.props);
+            history.push('/main');
+            }
+        });
+
+    }
+    handleUrlChange = (event) => {
+        this.setState({
+            urlInput: event.target.value
+        });
+    }
+    handleTitleChange = (event) => {
+        this.setState({
+            titleInput: event.target.value
+        });
+    }
+
+    render(){
+
+    const modalStyle = {
+      backgroundColor: '#F7F7F7',
+      borderRadius: 5,
+      width: 450,
+      height: 540,
+      margin: 0,
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      textAlign: 'center',
+      zIndex: 100
+    };
+    var inputStyle = {
+		padding:'0px 0px 0px 10px',
+		margin: "15px 0 0 0",
+		width: '80%',
+		height:35,
+		border: '1px solid gray',
+		borderRadius: 2,
+		fontSize: 20,
+		display:'inline-block'
+	};
+	var iconDivStyle = {
+	    display: 'inline-block',
+	    height: 37,
+	    width: 45,
+	    backgroundColor: 'gray',
+	    verticalAlign: 'bottom',
+	    borderTopLeftRadius: 5,
+	    borderBottomLeftRadius: 5,
+	};
+	var iconStyle = {
+	    height: 25,
+	    width: 25,
+	    margin: 'auto',
+	    marginTop: 5
+	};
+	var loginButtonDiv = {
+	    height: 75,
+	    width: '100%',
+	    textAlign: 'left'
+	};
+    var loginButtonStyle = {
+        display:'inline-block',
+        height: 40,
+        backgroundColor: '#56FF5B',
+        margin: '25px 5px 0px 40px',
+        padding: '5px 10px 5px 10px',
+        fontSize: 18,
+		fontFamily: 'Tahoma',
+		border:'none',
+		borderRadius: 5,
+		boxShadow:'none',
+		fontWeight: 900,
+		color: 'white'
+    };
+    var twitterButtonStyle = {
+        display:'inline-block',
+        height: 40,
+        backgroundColor: '#56D0FF',
+        margin: '25px 5px 0px 10px',
+        padding: '5px 10px 5px 10px',
+        fontSize: 18,
+		fontFamily: 'Tahoma',
+		border:'none',
+		borderRadius: 5,
+		boxShadow:'none',
+		fontWeight: 900,
+		color: 'white'
+    };
+    var hrStyle = {
+        width: '85%',
+        borderColor: '#E4F8FF'
+    };
+    var thumbnailStyle = {
+        width: '95%',
+        height: 340,
+        backgroundColor: 'red',
+        display: 'inline-block',
+        marginTop: 10
+    }
+    var buttonDivStyle = {
+        display: 'inline-block',
+        width: '100%',
+        textAlign: 'center'
+    }
+    var imgStyle = {
+            maxHeight: 340,
+            flex: 1,
+            display:'inline-block',
+            position: 'relative',
+            top: '50%',
+            transform: 'translateY(-50%)'
+        }
+        return (
+            <div className="modal" style={modalStyle}>
+                    <div style={thumbnailStyle}>
+                        <img src={this.state.urlInput} style={imgStyle}/>
+                    </div>
+                    <div>
+                        <input style={inputStyle} type="text" placeholder="Url" value={this.state.urlInput} onChange={this.handleUrlChange}/>
+                    </div>
+                    <div>
+                        <input style={inputStyle} type="text" placeholder="Title" value={this.state.titleInput} onChange={this.handleTitleChange}/>
+                    </div>
+                    <div style={buttonDivStyle}>
+                        <button style={twitterButtonStyle}>Submit</button>
+                    </div>
+            </div>
+
+            );
+
+    }
    
 }
 class Image extends React.Component{
@@ -424,7 +593,54 @@ class Image extends React.Component{
         
     }
 }
+class BoardInfoMenu extends React.Component{
+    constructor(props) {
+    super(props);
+    }
+    
+    render(){
 
+        var divStyle = {
+            display: 'inline-block',
+            width: 270,
+            margin: "10px 10px 10px 10px",
+            padding:0,
+            verticalAlign: 'top',
+            overflow: 'hidden',
+            overflowX: 'hidden',
+            borderRadius: 5,
+            textAlign: 'center'
+        }
+        var h1Style = {
+            display:'inline-block',
+            color: 'darkred',
+            fontFamily: 'Tahoma',
+            fontWeight: 900
+        };
+        var addImageButtonStyle = {
+            display:'inline-block',
+            height: 40,
+            backgroundColor: '#56D0FF',
+            margin: '5px 0px 0px 0px',
+            padding: '5px 10px 5px 10px',
+            fontSize: 18,
+		    fontFamily: 'Tahoma',
+		    border:'none',
+		    borderRadius: 5,
+		    boxShadow:'none',
+		    fontWeight: 900,
+		    color: 'white'
+        };
+
+            return (
+                <div style={divStyle} className="grid-item">
+                    <h1 style={h1Style}>Browsing All Images</h1>
+                    <button style={addImageButtonStyle}>Add Image</button>
+                </div>
+                );
+        
+    }
+}
 
 
 export default Main

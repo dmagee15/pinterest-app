@@ -28796,7 +28796,12 @@ var Header = function (_React$Component2) {
                     { style: searchButtonStyle },
                     _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-magnifier-6-48 (1).png" })
                 ),
-                this.props.store.user.authenticated == true ? _react2.default.createElement(PersonalButton, { float: "right", text: this.props.store.user.username, address: "login" }) : _react2.default.createElement(HoverButton, { float: "right", text: "Login", address: "login" })
+                this.props.store.user.authenticated == true ? _react2.default.createElement(
+                    "div",
+                    { style: { display: 'inline-block', float: 'right' } },
+                    _react2.default.createElement(HoverButton, { float: "right", text: "Logout", address: "login" }),
+                    _react2.default.createElement(PersonalButton, { float: "right", text: this.props.store.user.username, address: "login" })
+                ) : _react2.default.createElement(HoverButton, { float: "right", text: "Login", address: "login" })
             );
         }
     }]);
@@ -29008,6 +29013,7 @@ var ImageBoard = function (_React$Component6) {
             var images = _react2.default.createElement(
                 "div",
                 null,
+                _react2.default.createElement(BoardInfoMenu, null),
                 _react2.default.createElement(Image, { url: "http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg" }),
                 _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that_o_275514.jpg" }),
                 _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that-my-first-meme_o_271120.jpg" }),
@@ -29043,7 +29049,8 @@ var ImageBoard = function (_React$Component6) {
                         , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
                     },
                     images
-                )
+                ),
+                _react2.default.createElement(AddImage, null)
             );
         }
     }]);
@@ -29051,8 +29058,194 @@ var ImageBoard = function (_React$Component6) {
     return ImageBoard;
 }(_react2.default.Component);
 
-var Image = function (_React$Component7) {
-    _inherits(Image, _React$Component7);
+var AddImage = function (_React$Component7) {
+    _inherits(AddImage, _React$Component7);
+
+    function AddImage(props) {
+        _classCallCheck(this, AddImage);
+
+        var _this8 = _possibleConstructorReturn(this, (AddImage.__proto__ || Object.getPrototypeOf(AddImage)).call(this, props));
+
+        _this8.createAccount = function (history) {
+
+            fetch('/createnewuser', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: 'include',
+                body: JSON.stringify({ "username": _this8.state.usernameSignupInput,
+                    "password": _this8.state.passwordSignupInput,
+                    "email": _this8.state.emailSignupInput
+                })
+            }).then(function (data) {
+                return data.json();
+            }).then(function (j) {
+                if (Object.keys(j).length === 0) {
+                    console.log('fail');
+                    _this8.setState({ fail: true });
+                } else {
+                    console.log('pushing to homepage');
+                    console.log(j);
+                    _this8.props.store.loginUser(j);
+                    console.log(_this8.props);
+                    history.push('/main');
+                }
+            });
+        };
+
+        _this8.handleUrlChange = function (event) {
+            _this8.setState({
+                urlInput: event.target.value
+            });
+        };
+
+        _this8.handleTitleChange = function (event) {
+            _this8.setState({
+                titleInput: event.target.value
+            });
+        };
+
+        _this8.state = {
+            urlInput: '',
+            titleInput: ''
+        };
+        return _this8;
+    }
+
+    _createClass(AddImage, [{
+        key: "render",
+        value: function render() {
+
+            var modalStyle = {
+                backgroundColor: '#F7F7F7',
+                borderRadius: 5,
+                width: 450,
+                height: 540,
+                margin: 0,
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                zIndex: 100
+            };
+            var inputStyle = {
+                padding: '0px 0px 0px 10px',
+                margin: "15px 0 0 0",
+                width: '80%',
+                height: 35,
+                border: '1px solid gray',
+                borderRadius: 2,
+                fontSize: 20,
+                display: 'inline-block'
+            };
+            var iconDivStyle = {
+                display: 'inline-block',
+                height: 37,
+                width: 45,
+                backgroundColor: 'gray',
+                verticalAlign: 'bottom',
+                borderTopLeftRadius: 5,
+                borderBottomLeftRadius: 5
+            };
+            var iconStyle = {
+                height: 25,
+                width: 25,
+                margin: 'auto',
+                marginTop: 5
+            };
+            var loginButtonDiv = {
+                height: 75,
+                width: '100%',
+                textAlign: 'left'
+            };
+            var loginButtonStyle = {
+                display: 'inline-block',
+                height: 40,
+                backgroundColor: '#56FF5B',
+                margin: '25px 5px 0px 40px',
+                padding: '5px 10px 5px 10px',
+                fontSize: 18,
+                fontFamily: 'Tahoma',
+                border: 'none',
+                borderRadius: 5,
+                boxShadow: 'none',
+                fontWeight: 900,
+                color: 'white'
+            };
+            var twitterButtonStyle = {
+                display: 'inline-block',
+                height: 40,
+                backgroundColor: '#56D0FF',
+                margin: '25px 5px 0px 10px',
+                padding: '5px 10px 5px 10px',
+                fontSize: 18,
+                fontFamily: 'Tahoma',
+                border: 'none',
+                borderRadius: 5,
+                boxShadow: 'none',
+                fontWeight: 900,
+                color: 'white'
+            };
+            var hrStyle = {
+                width: '85%',
+                borderColor: '#E4F8FF'
+            };
+            var thumbnailStyle = {
+                width: '95%',
+                height: 340,
+                backgroundColor: 'red',
+                display: 'inline-block',
+                marginTop: 10
+            };
+            var buttonDivStyle = {
+                display: 'inline-block',
+                width: '100%',
+                textAlign: 'center'
+            };
+            var imgStyle = {
+                maxHeight: 340,
+                flex: 1,
+                display: 'inline-block',
+                position: 'relative',
+                top: '50%',
+                transform: 'translateY(-50%)'
+            };
+            return _react2.default.createElement(
+                "div",
+                { className: "modal", style: modalStyle },
+                _react2.default.createElement(
+                    "div",
+                    { style: thumbnailStyle },
+                    _react2.default.createElement("img", { src: this.state.urlInput, style: imgStyle })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    null,
+                    _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Url", value: this.state.urlInput, onChange: this.handleUrlChange })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    null,
+                    _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Title", value: this.state.titleInput, onChange: this.handleTitleChange })
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { style: buttonDivStyle },
+                    _react2.default.createElement(
+                        "button",
+                        { style: twitterButtonStyle },
+                        "Submit"
+                    )
+                )
+            );
+        }
+    }]);
+
+    return AddImage;
+}(_react2.default.Component);
+
+var Image = function (_React$Component8) {
+    _inherits(Image, _React$Component8);
 
     function Image(props) {
         _classCallCheck(this, Image);
@@ -29217,6 +29410,71 @@ var Image = function (_React$Component7) {
     }]);
 
     return Image;
+}(_react2.default.Component);
+
+var BoardInfoMenu = function (_React$Component9) {
+    _inherits(BoardInfoMenu, _React$Component9);
+
+    function BoardInfoMenu(props) {
+        _classCallCheck(this, BoardInfoMenu);
+
+        return _possibleConstructorReturn(this, (BoardInfoMenu.__proto__ || Object.getPrototypeOf(BoardInfoMenu)).call(this, props));
+    }
+
+    _createClass(BoardInfoMenu, [{
+        key: "render",
+        value: function render() {
+
+            var divStyle = {
+                display: 'inline-block',
+                width: 270,
+                margin: "10px 10px 10px 10px",
+                padding: 0,
+                verticalAlign: 'top',
+                overflow: 'hidden',
+                overflowX: 'hidden',
+                borderRadius: 5,
+                textAlign: 'center'
+            };
+            var h1Style = {
+                display: 'inline-block',
+                color: 'darkred',
+                fontFamily: 'Tahoma',
+                fontWeight: 900
+            };
+            var addImageButtonStyle = {
+                display: 'inline-block',
+                height: 40,
+                backgroundColor: '#56D0FF',
+                margin: '5px 0px 0px 0px',
+                padding: '5px 10px 5px 10px',
+                fontSize: 18,
+                fontFamily: 'Tahoma',
+                border: 'none',
+                borderRadius: 5,
+                boxShadow: 'none',
+                fontWeight: 900,
+                color: 'white'
+            };
+
+            return _react2.default.createElement(
+                "div",
+                { style: divStyle, className: "grid-item" },
+                _react2.default.createElement(
+                    "h1",
+                    { style: h1Style },
+                    "Browsing All Images"
+                ),
+                _react2.default.createElement(
+                    "button",
+                    { style: addImageButtonStyle },
+                    "Add Image"
+                )
+            );
+        }
+    }]);
+
+    return BoardInfoMenu;
 }(_react2.default.Component);
 
 exports.default = Main;
