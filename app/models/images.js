@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 
 var Image = new Schema({
         title: String,
-        source: String,
+        url: String,
         username: String,
         pinusers: Array,
 });

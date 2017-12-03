@@ -6,7 +6,7 @@ var User = require('../models/users');
 var Image = require('../models/images');
 
 module.exports = function (app, passport, googleBooks) {
-//User.find({}).remove().exec();
+//Image.find({}).remove().exec();
 //Book.find({}).remove().exec();
 	function isLoggedIn (req, res, next) {
 		if (req.isAuthenticated()) {
@@ -66,52 +66,27 @@ module.exports = function (app, passport, googleBooks) {
     	res.send(req.body);
     });
     
-    app.post('/findbook', function(req,res){
+    app.post('/addimage', function(req,res){
     	console.log("Fetch request successful");
-    	console.log(req.body.searchInput);
-    	
-    	googleBooks.search(req.body.searchInput, function(error, results) {
-		if ( ! error ) {
+    	console.log(req.body.url);
+		
+		var newImage = new Image();
+//		newImage.url = req.body.url.replace(/http/,'https');
+		newImage.url = req.body.url;
+		console.log(newImage.url);
+		newImage.title = req.body.title;
+		newImage.username = req.user.local.username;
+		newImage.pinusers = [req.user.local.username];
+		
+		newImage.save(function(err){
+			if(err) throw err;
+			Image.find({}, function(err,data){
+				if(err) throw err;
+				console.log(data);
+				res.send(data);
+			})
+		})
 			
-        	var resultArray = Object.assign({},results[0]);
-        	resultArray.thumbnail = resultArray.thumbnail.replace(/=1&zoom=1&edge=curl&source=gbs_api/,'').replace(/http/,'https');
-        	console.log(resultArray);
-        	
-        	var newBook = new Book();
-        	newBook.title = resultArray.title;
-        	newBook.thumbnail = resultArray.thumbnail;
-        	newBook.author = resultArray.authors[0];
-        	newBook.publishedDate = resultArray.publishedDate;
-        	newBook.pageCount = resultArray.pageCount;
-        	newBook.description = resultArray.description;
-        	newBook.city = req.user.local.city;
-        	newBook.state = req.user.local.state;
-        	newBook.fullName = req.user.local.fullName;
-        	newBook.username = req.user.local.username;
-        	newBook.tradeRequests = [];
-        	newBook.tradeConfirmUser = '';
-        	newBook.tradeConfirmDate = '';
-        	newBook.tradeConfirmEmail = '';
-        	newBook.tradeConfirmCity = '';
-        	newBook.tradeConfirmState = '';
-        	newBook.email = req.user.local.email;
-        	console.log("New Book");
-        	console.log(newBook);
-        	newBook.save(function(err){
-        		if(err) throw err;
-        		Book.find({'username':req.user.local.username}, function(err,data){
-    			if(err) throw err;
-    			console.log("username: "+req.user.local.username);
-    			console.log(JSON.stringify(data));
-    			res.send(data);
-        		});
-    		});
-			
-    	} else {
-        		console.log(error);
-        		res.end();
-    		}
-		});
     	
     });
     
@@ -351,10 +326,10 @@ module.exports = function (app, passport, googleBooks) {
     	
     });
     
-    app.get('/getallbooksdata', function(req,res){
+    app.get('/getimages', function(req,res){
     	console.log("Fetch request successful");
 
-    	Book.find({}, function(err,data){
+    	Image.find({}, function(err,data){
     		if(err) throw err;
     		console.log(JSON.stringify(data));
     		res.send(data);

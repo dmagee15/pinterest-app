@@ -15,7 +15,7 @@ class Main extends React.Component{
             return (
                <div>
                     <Header store={this.props.store}/>
-                    <ImageBoard />
+                    <ImageBoard store={this.props.store}/>
                </div>
           ); 
 					
@@ -89,11 +89,11 @@ class Header extends React.Component{
             <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png"/></button>
             {(this.props.store.user.authenticated==true)?(
             <div style={{display:'inline-block', float:'right'}}>
-                <HoverButton float='right' text='Logout' address="login"/>
+                <LogoutButton float='right' store={this.props.store}/>
                 <PersonalButton float='right' text={this.props.store.user.username} address="login"/>
             </div>
             ):(
-                <HoverButton float='right' text='Login' address="login"/>
+                <HoverButton float='right' text='Login' address="/"/>
             )}
           </div>
           ); 
@@ -216,7 +216,7 @@ class LogoutButton extends React.Component{
         credentials: 'include'
         }).then(() => {
             this.props.store.logoutUser();
-            history.push('/');
+            history.push('/main');
         })
     }
     
@@ -243,27 +243,53 @@ class LogoutButton extends React.Component{
 class ImageBoard extends React.Component{
     constructor(props) {
     super(props);
+    this.state = {
+            addimage: false,
+            imagesArray: []
+        }
+        fetch('/getimages', {
+        method: 'GET',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log(j);
+            var imagesArray = j.slice();
+            this.setState({imagesArray});
+
+        });
     }
-    
+    addImageDataHandler = (url, title) => {
+        this.addImageHandler();
+        fetch('/addimage', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"url":url,
+            "title":title
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log(j);
+            var imagesArray = j.slice();
+            this.setState({imagesArray});
+
+        });
+    }
+    addImageHandler = () => {
+        this.setState({addimage: !this.state.addimage});
+    }
    render(){
-            var images =
-                <div>
-                    <BoardInfoMenu />
-                    <Image url="http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg"/>
-                    <Image url="https://img.memecdn.com/you-cant-explain-that_o_275514.jpg"/>
-                    <Image url="https://img.memecdn.com/you-cant-explain-that-my-first-meme_o_271120.jpg"/>
-                    <Image url="http://i0.kym-cdn.com/photos/images/facebook/000/114/439/Ok-pinhead-where-did-God-come-from-I-cant-explain-that.jpg"/>
-                    <Image url="http://i.kinja-img.com/gawker-media/image/upload/s--gv5IYfsE--/ju1emrk8qbjwulltom9w.jpg"/>
-                    <Image url="https://img.memecdn.com/you-cant-explain-that_o_760684.jpg"/>
-                    <Image url="http://i0.kym-cdn.com/photos/images/facebook/000/098/235/VWkZl.jpg"/>
-                    <Image url="http://i0.kym-cdn.com/photos/images/newsfeed/000/098/234/qAgC2.jpg"/>
-                    <Image url="http://i0.kym-cdn.com/photos/images/facebook/000/283/817/e3d.jpg"/>
-                    <Image url="https://am22.akamaized.net/tms/cnt/uploads/2011/02/dollar-soda.jpeg"/>
-                    <Image url="http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg"/>
-                    <Image url="https://img.memecdn.com/you-cant-explain-that_o_275514.jpg"/>
-                    <Image url="https://img.memecdn.com/you-cant-explain-that-my-first-meme_o_271120.jpg"/>
-                    <Image url="http://i0.kym-cdn.com/photos/images/facebook/000/114/439/Ok-pinhead-where-did-God-come-from-I-cant-explain-that.jpg"/>
-                </div>;
+            var images = this.state.imagesArray.map((image, index) => 
+		   <Image key={index} store={this.props.store} image={image} />
+		    );
+		    var display = 
+		        <div>
+		            <BoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store}/>
+		            {images}
+		        </div>;
             
             var divStyle = {
                 width: '100%',
@@ -280,9 +306,9 @@ class ImageBoard extends React.Component{
                 disableImagesLoaded={false} // default false
                 updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
                 >
-                    {images}
+                    {display}
                 </Masonry>
-                <AddImage />
+                <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
                </div>
           ); 
 					
@@ -335,8 +361,16 @@ class AddImage extends React.Component{
             titleInput: event.target.value
         });
     }
+    handleSubmit = () => {
+        this.props.addImageDataHandler(this.state.urlInput,this.state.titleInput);
+        this.setState({urlInput: '',titleInput: ''});
+    }
 
     render(){
+        
+    if(this.props.visible==false){
+        return null;
+    }
 
     const modalStyle = {
       backgroundColor: '#F7F7F7',
@@ -416,9 +450,8 @@ class AddImage extends React.Component{
     var thumbnailStyle = {
         width: '95%',
         height: 340,
-        backgroundColor: 'red',
+        backgroundColor: '#E8E8E8',
         display: 'inline-block',
-        marginTop: 10
     }
     var buttonDivStyle = {
         display: 'inline-block',
@@ -433,8 +466,19 @@ class AddImage extends React.Component{
             top: '50%',
             transform: 'translateY(-50%)'
         }
+    var exitButtonStyle ={
+        display:'inline-block',
+        border: 'none',
+        padding: '0 5px 0 5px',
+        margin: 0,
+        background: 'none',
+        fontWeight: 900,
+    }
         return (
             <div className="modal" style={modalStyle}>
+                    <div style={{width:'100%',textAlign:'right'}}>
+                    <button style={exitButtonStyle} onClick={this.props.addImageHandler}>X</button>
+                    </div>
                     <div style={thumbnailStyle}>
                         <img src={this.state.urlInput} style={imgStyle}/>
                     </div>
@@ -445,7 +489,7 @@ class AddImage extends React.Component{
                         <input style={inputStyle} type="text" placeholder="Title" value={this.state.titleInput} onChange={this.handleTitleChange}/>
                     </div>
                     <div style={buttonDivStyle}>
-                        <button style={twitterButtonStyle}>Submit</button>
+                        <button style={twitterButtonStyle} onClick={this.handleSubmit}>Submit</button>
                     </div>
             </div>
 
@@ -575,17 +619,17 @@ class Image extends React.Component{
             return (
                 <div style={divStyle} className="grid-item">
                 <div style={thumbnailStyle}>
-                    <img src={this.props.url} style={imgStyle} />
+                    <img src={this.props.image.url} style={imgStyle} />
                 </div>
                 <div style={divContentStyle}>
                     <div style={titleContainerStyle}>
-                    <h3 style={titleStyle}>Title</h3>
+                    <h3 style={titleStyle}>{this.props.image.title}</h3>
                     </div>
-                    <button style={searchButtonStyle}>KyleCal33</button>
+                    <button style={searchButtonStyle}>{this.props.image.username}</button>
 
                     <div style={pinSectionStyle}>
                     <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></button>
-                    <p style={numPinsStyle}>25</p>
+                    <p style={numPinsStyle}>{this.props.image.pinusers.length}</p>
                     </div>
                 </div>
             </div>
@@ -631,13 +675,21 @@ class BoardInfoMenu extends React.Component{
 		    fontWeight: 900,
 		    color: 'white'
         };
-
+        if(this.props.store.user.username==''){
             return (
                 <div style={divStyle} className="grid-item">
                     <h1 style={h1Style}>Browsing All Images</h1>
-                    <button style={addImageButtonStyle}>Add Image</button>
                 </div>
                 );
+        }
+        else{
+            return (
+                <div style={divStyle} className="grid-item">
+                    <h1 style={h1Style}>Browsing All Images</h1>
+                    <button style={addImageButtonStyle} onClick={this.props.addImageHandler}>Add Image</button>
+                </div>
+                );
+        }
         
     }
 }

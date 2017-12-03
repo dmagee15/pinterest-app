@@ -28713,7 +28713,7 @@ var Main = function (_React$Component) {
                 "div",
                 null,
                 _react2.default.createElement(Header, { store: this.props.store }),
-                _react2.default.createElement(ImageBoard, null)
+                _react2.default.createElement(ImageBoard, { store: this.props.store })
             );
         }
     }]);
@@ -28799,9 +28799,9 @@ var Header = function (_React$Component2) {
                 this.props.store.user.authenticated == true ? _react2.default.createElement(
                     "div",
                     { style: { display: 'inline-block', float: 'right' } },
-                    _react2.default.createElement(HoverButton, { float: "right", text: "Logout", address: "login" }),
+                    _react2.default.createElement(LogoutButton, { float: "right", store: this.props.store }),
                     _react2.default.createElement(PersonalButton, { float: "right", text: this.props.store.user.username, address: "login" })
-                ) : _react2.default.createElement(HoverButton, { float: "right", text: "Login", address: "login" })
+                ) : _react2.default.createElement(HoverButton, { float: "right", text: "Login", address: "/" })
             );
         }
     }]);
@@ -28958,7 +28958,7 @@ var LogoutButton = function (_React$Component5) {
                 credentials: 'include'
             }).then(function () {
                 _this5.props.store.logoutUser();
-                history.push('/');
+                history.push('/main');
             });
         };
 
@@ -29004,30 +29004,61 @@ var ImageBoard = function (_React$Component6) {
     function ImageBoard(props) {
         _classCallCheck(this, ImageBoard);
 
-        return _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
+        var _this7 = _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
+
+        _this7.addImageDataHandler = function (url, title) {
+            _this7.addImageHandler();
+            fetch('/addimage', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: 'include',
+                body: JSON.stringify({ "url": url,
+                    "title": title
+                })
+            }).then(function (data) {
+                return data.json();
+            }).then(function (j) {
+                console.log(j);
+                var imagesArray = j.slice();
+                _this7.setState({ imagesArray: imagesArray });
+            });
+        };
+
+        _this7.addImageHandler = function () {
+            _this7.setState({ addimage: !_this7.state.addimage });
+        };
+
+        _this7.state = {
+            addimage: false,
+            imagesArray: []
+        };
+        fetch('/getimages', {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include'
+        }).then(function (data) {
+            return data.json();
+        }).then(function (j) {
+            console.log(j);
+            var imagesArray = j.slice();
+            _this7.setState({ imagesArray: imagesArray });
+        });
+        return _this7;
     }
 
     _createClass(ImageBoard, [{
         key: "render",
         value: function render() {
-            var images = _react2.default.createElement(
+            var _this8 = this;
+
+            var images = this.state.imagesArray.map(function (image, index) {
+                return _react2.default.createElement(Image, { key: index, store: _this8.props.store, image: image });
+            });
+            var display = _react2.default.createElement(
                 "div",
                 null,
-                _react2.default.createElement(BoardInfoMenu, null),
-                _react2.default.createElement(Image, { url: "http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg" }),
-                _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that_o_275514.jpg" }),
-                _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that-my-first-meme_o_271120.jpg" }),
-                _react2.default.createElement(Image, { url: "http://i0.kym-cdn.com/photos/images/facebook/000/114/439/Ok-pinhead-where-did-God-come-from-I-cant-explain-that.jpg" }),
-                _react2.default.createElement(Image, { url: "http://i.kinja-img.com/gawker-media/image/upload/s--gv5IYfsE--/ju1emrk8qbjwulltom9w.jpg" }),
-                _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that_o_760684.jpg" }),
-                _react2.default.createElement(Image, { url: "http://i0.kym-cdn.com/photos/images/facebook/000/098/235/VWkZl.jpg" }),
-                _react2.default.createElement(Image, { url: "http://i0.kym-cdn.com/photos/images/newsfeed/000/098/234/qAgC2.jpg" }),
-                _react2.default.createElement(Image, { url: "http://i0.kym-cdn.com/photos/images/facebook/000/283/817/e3d.jpg" }),
-                _react2.default.createElement(Image, { url: "https://am22.akamaized.net/tms/cnt/uploads/2011/02/dollar-soda.jpeg" }),
-                _react2.default.createElement(Image, { url: "http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg" }),
-                _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that_o_275514.jpg" }),
-                _react2.default.createElement(Image, { url: "https://img.memecdn.com/you-cant-explain-that-my-first-meme_o_271120.jpg" }),
-                _react2.default.createElement(Image, { url: "http://i0.kym-cdn.com/photos/images/facebook/000/114/439/Ok-pinhead-where-did-God-come-from-I-cant-explain-that.jpg" })
+                _react2.default.createElement(BoardInfoMenu, { addImageHandler: this.addImageHandler, store: this.props.store }),
+                images
             );
 
             var divStyle = {
@@ -29048,9 +29079,9 @@ var ImageBoard = function (_React$Component6) {
                         , disableImagesLoaded: false // default false
                         , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
                     },
-                    images
+                    display
                 ),
-                _react2.default.createElement(AddImage, null)
+                _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
             );
         }
     }]);
@@ -29064,56 +29095,65 @@ var AddImage = function (_React$Component7) {
     function AddImage(props) {
         _classCallCheck(this, AddImage);
 
-        var _this8 = _possibleConstructorReturn(this, (AddImage.__proto__ || Object.getPrototypeOf(AddImage)).call(this, props));
+        var _this9 = _possibleConstructorReturn(this, (AddImage.__proto__ || Object.getPrototypeOf(AddImage)).call(this, props));
 
-        _this8.createAccount = function (history) {
+        _this9.createAccount = function (history) {
 
             fetch('/createnewuser', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',
-                body: JSON.stringify({ "username": _this8.state.usernameSignupInput,
-                    "password": _this8.state.passwordSignupInput,
-                    "email": _this8.state.emailSignupInput
+                body: JSON.stringify({ "username": _this9.state.usernameSignupInput,
+                    "password": _this9.state.passwordSignupInput,
+                    "email": _this9.state.emailSignupInput
                 })
             }).then(function (data) {
                 return data.json();
             }).then(function (j) {
                 if (Object.keys(j).length === 0) {
                     console.log('fail');
-                    _this8.setState({ fail: true });
+                    _this9.setState({ fail: true });
                 } else {
                     console.log('pushing to homepage');
                     console.log(j);
-                    _this8.props.store.loginUser(j);
-                    console.log(_this8.props);
+                    _this9.props.store.loginUser(j);
+                    console.log(_this9.props);
                     history.push('/main');
                 }
             });
         };
 
-        _this8.handleUrlChange = function (event) {
-            _this8.setState({
+        _this9.handleUrlChange = function (event) {
+            _this9.setState({
                 urlInput: event.target.value
             });
         };
 
-        _this8.handleTitleChange = function (event) {
-            _this8.setState({
+        _this9.handleTitleChange = function (event) {
+            _this9.setState({
                 titleInput: event.target.value
             });
         };
 
-        _this8.state = {
+        _this9.handleSubmit = function () {
+            _this9.props.addImageDataHandler(_this9.state.urlInput, _this9.state.titleInput);
+            _this9.setState({ urlInput: '', titleInput: '' });
+        };
+
+        _this9.state = {
             urlInput: '',
             titleInput: ''
         };
-        return _this8;
+        return _this9;
     }
 
     _createClass(AddImage, [{
         key: "render",
         value: function render() {
+
+            if (this.props.visible == false) {
+                return null;
+            }
 
             var modalStyle = {
                 backgroundColor: '#F7F7F7',
@@ -29193,9 +29233,8 @@ var AddImage = function (_React$Component7) {
             var thumbnailStyle = {
                 width: '95%',
                 height: 340,
-                backgroundColor: 'red',
-                display: 'inline-block',
-                marginTop: 10
+                backgroundColor: '#E8E8E8',
+                display: 'inline-block'
             };
             var buttonDivStyle = {
                 display: 'inline-block',
@@ -29210,9 +29249,26 @@ var AddImage = function (_React$Component7) {
                 top: '50%',
                 transform: 'translateY(-50%)'
             };
+            var exitButtonStyle = {
+                display: 'inline-block',
+                border: 'none',
+                padding: '0 5px 0 5px',
+                margin: 0,
+                background: 'none',
+                fontWeight: 900
+            };
             return _react2.default.createElement(
                 "div",
                 { className: "modal", style: modalStyle },
+                _react2.default.createElement(
+                    "div",
+                    { style: { width: '100%', textAlign: 'right' } },
+                    _react2.default.createElement(
+                        "button",
+                        { style: exitButtonStyle, onClick: this.props.addImageHandler },
+                        "X"
+                    )
+                ),
                 _react2.default.createElement(
                     "div",
                     { style: thumbnailStyle },
@@ -29233,7 +29289,7 @@ var AddImage = function (_React$Component7) {
                     { style: buttonDivStyle },
                     _react2.default.createElement(
                         "button",
-                        { style: twitterButtonStyle },
+                        { style: twitterButtonStyle, onClick: this.handleSubmit },
                         "Submit"
                     )
                 )
@@ -29371,7 +29427,7 @@ var Image = function (_React$Component8) {
                 _react2.default.createElement(
                     "div",
                     { style: thumbnailStyle },
-                    _react2.default.createElement("img", { src: this.props.url, style: imgStyle })
+                    _react2.default.createElement("img", { src: this.props.image.url, style: imgStyle })
                 ),
                 _react2.default.createElement(
                     "div",
@@ -29382,13 +29438,13 @@ var Image = function (_React$Component8) {
                         _react2.default.createElement(
                             "h3",
                             { style: titleStyle },
-                            "Title"
+                            this.props.image.title
                         )
                     ),
                     _react2.default.createElement(
                         "button",
                         { style: searchButtonStyle },
-                        "KyleCal33"
+                        this.props.image.username
                     ),
                     _react2.default.createElement(
                         "div",
@@ -29401,7 +29457,7 @@ var Image = function (_React$Component8) {
                         _react2.default.createElement(
                             "p",
                             { style: numPinsStyle },
-                            "25"
+                            this.props.image.pinusers.length
                         )
                     )
                 )
@@ -29456,21 +29512,32 @@ var BoardInfoMenu = function (_React$Component9) {
                 fontWeight: 900,
                 color: 'white'
             };
-
-            return _react2.default.createElement(
-                "div",
-                { style: divStyle, className: "grid-item" },
-                _react2.default.createElement(
-                    "h1",
-                    { style: h1Style },
-                    "Browsing All Images"
-                ),
-                _react2.default.createElement(
-                    "button",
-                    { style: addImageButtonStyle },
-                    "Add Image"
-                )
-            );
+            if (this.props.store.user.username == '') {
+                return _react2.default.createElement(
+                    "div",
+                    { style: divStyle, className: "grid-item" },
+                    _react2.default.createElement(
+                        "h1",
+                        { style: h1Style },
+                        "Browsing All Images"
+                    )
+                );
+            } else {
+                return _react2.default.createElement(
+                    "div",
+                    { style: divStyle, className: "grid-item" },
+                    _react2.default.createElement(
+                        "h1",
+                        { style: h1Style },
+                        "Browsing All Images"
+                    ),
+                    _react2.default.createElement(
+                        "button",
+                        { style: addImageButtonStyle, onClick: this.props.addImageHandler },
+                        "Add Image"
+                    )
+                );
+            }
         }
     }]);
 
