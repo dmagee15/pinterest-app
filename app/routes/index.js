@@ -90,6 +90,30 @@ module.exports = function (app, passport, googleBooks) {
     	
     });
     
+    app.post('/adduserimage', function(req,res){
+    	console.log("Fetch request successful");
+    	console.log(req.body.url);
+		
+		var newImage = new Image();
+//		newImage.url = req.body.url.replace(/http/,'https');
+		newImage.url = req.body.url;
+		console.log(newImage.url);
+		newImage.title = req.body.title;
+		newImage.username = req.user.local.username;
+		newImage.pinusers = [req.user.local.username];
+		
+		newImage.save(function(err){
+			if(err) throw err;
+			Image.find({'username':req.user.local.username}, function(err,data){
+				if(err) throw err;
+				console.log(data);
+				res.send(data);
+			})
+		})
+			
+    	
+    });
+    
     app.post('/removebook', function(req,res){
     	console.log("Fetch request successful");
     	console.log(req.body.id);
@@ -330,6 +354,17 @@ module.exports = function (app, passport, googleBooks) {
     	console.log("Fetch request successful");
 
     	Image.find({}, function(err,data){
+    		if(err) throw err;
+    		console.log(JSON.stringify(data));
+    		res.send(data);
+    	});
+    	
+    });
+    
+    app.post('/getuserimages', function(req,res){
+    	console.log("GET USER IMAGES");
+		console.log(req.body.user);
+    	Image.find({'username':req.body.user}, function(err,data){
     		if(err) throw err;
     		console.log(JSON.stringify(data));
     		res.send(data);

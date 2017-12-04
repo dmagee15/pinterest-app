@@ -8,14 +8,25 @@ import Masonry from 'react-masonry-component';
 class Main extends React.Component{
     constructor(props) {
     super(props);
+    this.state = {
+        userWindow: ''
     }
-    
+    }
+    changeWindowState = (user) => {
+        this.setState({userWindow: user});
+    }
    render(){
 
             return (
                <div>
-                    <Header store={this.props.store}/>
-                    <ImageBoard store={this.props.store}/>
+                    <Header store={this.props.store} changeWindowState={this.changeWindowState}/>
+                    {
+                        (this.state.userWindow=='')?(
+                            <ImageBoard store={this.props.store}/>
+                        ):(
+                            <UserImageBoard store={this.props.store} user={this.state.userWindow}/>
+                        )
+                    }
                </div>
           ); 
 					
@@ -84,13 +95,13 @@ class Header extends React.Component{
 
         return (
            <div id="header" style={divStyle}>
-            <HoverButton float='left' text='Home' address="/"/>
+            <HomeButton float='left' text='Home' store={this.props.store} changeWindowState={this.props.changeWindowState}/>
             <input type="text" placeholder="Search Images..." style={searchInputStyle}/>
             <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png"/></button>
             {(this.props.store.user.authenticated==true)?(
             <div style={{display:'inline-block', float:'right'}}>
                 <LogoutButton float='right' store={this.props.store}/>
-                <PersonalButton float='right' text={this.props.store.user.username} address="login"/>
+                <PersonalButton float='right' text={this.props.store.user.username} store={this.props.store} changeWindowState={this.props.changeWindowState}/>
             </div>
             ):(
                 <HoverButton float='right' text='Login' address="/"/>
@@ -184,10 +195,58 @@ class PersonalButton extends React.Component{
 	        fontFamily: 'Arial Black'
 	    }
         return(
-            <Link to={this.props.address}>
-            
-            <button style={hoverButtonStyle} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}><img style={iconStyle} src="/output/iconmonstr-user-5-48.png" />
-            <p style={buttonTextStyle}>{this.props.text}</p></button></Link>
+            <button style={hoverButtonStyle} onClick={() => {this.props.changeWindowState(this.props.store.user.username)}} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}><img style={iconStyle} src="/output/iconmonstr-user-5-48.png" />
+            <p style={buttonTextStyle}>{this.props.text}</p>
+            </button>
+        );
+    }
+}
+
+class HomeButton extends React.Component{
+    constructor(props) {
+    super(props);
+    this.state = {
+        hover: false
+        };
+    }
+    getInitialState = () => {
+        return {hover: false};
+    }
+    
+    mouseOver = () => {
+        this.setState({hover: true});
+    }
+    
+    mouseOut = () => {
+        this.setState({hover: false});
+    }
+    
+    
+    
+    render() {
+        
+        var hoverButtonStyle = {
+		    height: 50,
+		    color: 'darkslateblue',
+		    float: this.props.float,
+		    background: this.state.hover?'lightblue':'none',
+            border:'none',
+            margin: '0px 35px 0px 35px'
+		};
+        var iconStyle = {
+	    height: 20,
+	    width: 20,
+	    margin: '0px 10px 0px 0px',
+	    verticalAlign: 'middle'
+	    };
+	    var buttonTextStyle = {
+	        display:'inline-block',
+	        fontFamily: 'Arial Black'
+	    }
+        return(
+            <button style={hoverButtonStyle} onClick={() => {this.props.changeWindowState('')}} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}>
+            <p style={buttonTextStyle}>{this.props.text}</p>
+            </button>
         );
     }
 }
@@ -288,6 +347,83 @@ class ImageBoard extends React.Component{
 		    var display = 
 		        <div>
 		            <BoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store}/>
+		            {images}
+		        </div>;
+            
+            var divStyle = {
+                width: '100%',
+                height: '100vh',
+                paddingTop: 60
+            }
+            return (
+               <div style={divStyle}>
+                    <Masonry
+                className={'my-gallery-class'} // default ''
+                elementType={'ul'} // default 'div'
+                options={{itemSelector: '.grid-item',
+                columnWidth: 290}} // default {}
+                disableImagesLoaded={false} // default false
+                updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+                >
+                    {display}
+                </Masonry>
+                <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
+               </div>
+          ); 
+					
+   }
+      
+}
+class UserImageBoard extends React.Component{
+    constructor(props) {
+    super(props);
+    this.state = {
+            addimage: false,
+            imagesArray: []
+        }
+        fetch('/getuserimages', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"user":this.props.user,
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log(j);
+            var imagesArray = j.slice();
+            this.setState({imagesArray});
+
+        });
+    }
+    addImageDataHandler = (url, title) => {
+        this.addImageHandler();
+        fetch('/adduserimage', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"url":url,
+            "title":title
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log(j);
+            var imagesArray = j.slice();
+            this.setState({imagesArray});
+
+        });
+    }
+    addImageHandler = () => {
+        this.setState({addimage: !this.state.addimage});
+    }
+   render(){
+            var images = this.state.imagesArray.map((image, index) => 
+		   <Image key={index} store={this.props.store} image={image} />
+		    );
+		    var display = 
+		        <div>
+		            <UserBoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store} user={this.props.user}/>
 		            {images}
 		        </div>;
             
@@ -694,5 +830,68 @@ class BoardInfoMenu extends React.Component{
     }
 }
 
+class UserBoardInfoMenu extends React.Component{
+    constructor(props) {
+    super(props);
+    }
+    
+    render(){
+
+        var divStyle = {
+            display: 'inline-block',
+            width: 270,
+            margin: "10px 10px 10px 10px",
+            padding:0,
+            verticalAlign: 'top',
+            overflow: 'hidden',
+            overflowX: 'hidden',
+            borderRadius: 5,
+            textAlign: 'center'
+        }
+        var h1Style = {
+            display:'inline-block',
+            color: 'darkred',
+            fontFamily: 'Tahoma',
+            fontWeight: 900
+        };
+        var addImageButtonStyle = {
+            display:'inline-block',
+            height: 40,
+            backgroundColor: '#56D0FF',
+            margin: '5px 0px 0px 0px',
+            padding: '5px 10px 5px 10px',
+            fontSize: 18,
+		    fontFamily: 'Tahoma',
+		    border:'none',
+		    borderRadius: 5,
+		    boxShadow:'none',
+		    fontWeight: 900,
+		    color: 'white'
+        };
+        if(this.props.store.user.username==''){
+            return (
+                <div style={divStyle} className="grid-item">
+                    <h1 style={h1Style}>Browsing All Images</h1>
+                </div>
+                );
+        }
+        else if(this.props.store.user.username==this.props.user){
+            return (
+                <div style={divStyle} className="grid-item">
+                    <h1 style={h1Style}>Browsing Your Images</h1>
+                    <button style={addImageButtonStyle} onClick={this.props.addImageHandler}>Add Image</button>
+                </div>
+                );
+        }
+        else{
+            return (
+                <div style={divStyle} className="grid-item">
+                    <h1 style={h1Style}>Browsing {this.props.user}'s Images</h1>
+                </div>
+                );
+        }
+        
+    }
+}
 
 export default Main

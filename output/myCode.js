@@ -28702,7 +28702,16 @@ var Main = function (_React$Component) {
     function Main(props) {
         _classCallCheck(this, Main);
 
-        return _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
+
+        _this.changeWindowState = function (user) {
+            _this.setState({ userWindow: user });
+        };
+
+        _this.state = {
+            userWindow: ''
+        };
+        return _this;
     }
 
     _createClass(Main, [{
@@ -28712,8 +28721,8 @@ var Main = function (_React$Component) {
             return _react2.default.createElement(
                 "div",
                 null,
-                _react2.default.createElement(Header, { store: this.props.store }),
-                _react2.default.createElement(ImageBoard, { store: this.props.store })
+                _react2.default.createElement(Header, { store: this.props.store, changeWindowState: this.changeWindowState }),
+                this.state.userWindow == '' ? _react2.default.createElement(ImageBoard, { store: this.props.store }) : _react2.default.createElement(UserImageBoard, { store: this.props.store, user: this.state.userWindow })
             );
         }
     }]);
@@ -28789,7 +28798,7 @@ var Header = function (_React$Component2) {
             return _react2.default.createElement(
                 "div",
                 { id: "header", style: divStyle },
-                _react2.default.createElement(HoverButton, { float: "left", text: "Home", address: "/" }),
+                _react2.default.createElement(HomeButton, { float: "left", text: "Home", store: this.props.store, changeWindowState: this.props.changeWindowState }),
                 _react2.default.createElement("input", { type: "text", placeholder: "Search Images...", style: searchInputStyle }),
                 _react2.default.createElement(
                     "button",
@@ -28800,7 +28809,7 @@ var Header = function (_React$Component2) {
                     "div",
                     { style: { display: 'inline-block', float: 'right' } },
                     _react2.default.createElement(LogoutButton, { float: "right", store: this.props.store }),
-                    _react2.default.createElement(PersonalButton, { float: "right", text: this.props.store.user.username, address: "login" })
+                    _react2.default.createElement(PersonalButton, { float: "right", text: this.props.store.user.username, store: this.props.store, changeWindowState: this.props.changeWindowState })
                 ) : _react2.default.createElement(HoverButton, { float: "right", text: "Login", address: "/" })
             );
         }
@@ -28893,6 +28902,7 @@ var PersonalButton = function (_React$Component4) {
     _createClass(PersonalButton, [{
         key: "render",
         value: function render() {
+            var _this5 = this;
 
             var hoverButtonStyle = {
                 height: 50,
@@ -28913,17 +28923,15 @@ var PersonalButton = function (_React$Component4) {
                 fontFamily: 'Arial Black'
             };
             return _react2.default.createElement(
-                _reactRouterDom.Link,
-                { to: this.props.address },
+                "button",
+                { style: hoverButtonStyle, onClick: function onClick() {
+                        _this5.props.changeWindowState(_this5.props.store.user.username);
+                    }, onMouseOver: this.mouseOver, onMouseOut: this.mouseOut },
+                _react2.default.createElement("img", { style: iconStyle, src: "/output/iconmonstr-user-5-48.png" }),
                 _react2.default.createElement(
-                    "button",
-                    { style: hoverButtonStyle, onMouseOver: this.mouseOver, onMouseOut: this.mouseOut },
-                    _react2.default.createElement("img", { style: iconStyle, src: "/output/iconmonstr-user-5-48.png" }),
-                    _react2.default.createElement(
-                        "p",
-                        { style: buttonTextStyle },
-                        this.props.text
-                    )
+                    "p",
+                    { style: buttonTextStyle },
+                    this.props.text
                 )
             );
         }
@@ -28932,46 +28940,112 @@ var PersonalButton = function (_React$Component4) {
     return PersonalButton;
 }(_react2.default.Component);
 
-var LogoutButton = function (_React$Component5) {
-    _inherits(LogoutButton, _React$Component5);
+var HomeButton = function (_React$Component5) {
+    _inherits(HomeButton, _React$Component5);
+
+    function HomeButton(props) {
+        _classCallCheck(this, HomeButton);
+
+        var _this6 = _possibleConstructorReturn(this, (HomeButton.__proto__ || Object.getPrototypeOf(HomeButton)).call(this, props));
+
+        _this6.getInitialState = function () {
+            return { hover: false };
+        };
+
+        _this6.mouseOver = function () {
+            _this6.setState({ hover: true });
+        };
+
+        _this6.mouseOut = function () {
+            _this6.setState({ hover: false });
+        };
+
+        _this6.state = {
+            hover: false
+        };
+        return _this6;
+    }
+
+    _createClass(HomeButton, [{
+        key: "render",
+        value: function render() {
+            var _this7 = this;
+
+            var hoverButtonStyle = {
+                height: 50,
+                color: 'darkslateblue',
+                float: this.props.float,
+                background: this.state.hover ? 'lightblue' : 'none',
+                border: 'none',
+                margin: '0px 35px 0px 35px'
+            };
+            var iconStyle = {
+                height: 20,
+                width: 20,
+                margin: '0px 10px 0px 0px',
+                verticalAlign: 'middle'
+            };
+            var buttonTextStyle = {
+                display: 'inline-block',
+                fontFamily: 'Arial Black'
+            };
+            return _react2.default.createElement(
+                "button",
+                { style: hoverButtonStyle, onClick: function onClick() {
+                        _this7.props.changeWindowState('');
+                    }, onMouseOver: this.mouseOver, onMouseOut: this.mouseOut },
+                _react2.default.createElement(
+                    "p",
+                    { style: buttonTextStyle },
+                    this.props.text
+                )
+            );
+        }
+    }]);
+
+    return HomeButton;
+}(_react2.default.Component);
+
+var LogoutButton = function (_React$Component6) {
+    _inherits(LogoutButton, _React$Component6);
 
     function LogoutButton(props) {
         _classCallCheck(this, LogoutButton);
 
-        var _this5 = _possibleConstructorReturn(this, (LogoutButton.__proto__ || Object.getPrototypeOf(LogoutButton)).call(this, props));
+        var _this8 = _possibleConstructorReturn(this, (LogoutButton.__proto__ || Object.getPrototypeOf(LogoutButton)).call(this, props));
 
-        _this5.getInitialState = function () {
+        _this8.getInitialState = function () {
             return { hover: false };
         };
 
-        _this5.mouseOver = function () {
-            _this5.setState({ hover: true });
+        _this8.mouseOver = function () {
+            _this8.setState({ hover: true });
         };
 
-        _this5.mouseOut = function () {
-            _this5.setState({ hover: false });
+        _this8.mouseOut = function () {
+            _this8.setState({ hover: false });
         };
 
-        _this5.logout = function (history) {
+        _this8.logout = function (history) {
             fetch('/logout', {
                 method: 'GET',
                 credentials: 'include'
             }).then(function () {
-                _this5.props.store.logoutUser();
+                _this8.props.store.logoutUser();
                 history.push('/main');
             });
         };
 
-        _this5.state = {
+        _this8.state = {
             hover: false
         };
-        return _this5;
+        return _this8;
     }
 
     _createClass(LogoutButton, [{
         key: "render",
         value: function render() {
-            var _this6 = this;
+            var _this9 = this;
 
             var hoverButtonStyle = {
                 height: 50,
@@ -28986,8 +29060,8 @@ var LogoutButton = function (_React$Component5) {
                     var history = _ref.history;
                     return _react2.default.createElement(
                         "button",
-                        { style: hoverButtonStyle, onMouseOver: _this6.mouseOver, onMouseOut: _this6.mouseOut, onClick: function onClick() {
-                                return _this6.logout(history);
+                        { style: hoverButtonStyle, onMouseOver: _this9.mouseOver, onMouseOut: _this9.mouseOut, onClick: function onClick() {
+                                return _this9.logout(history);
                             } },
                         "Logout"
                     );
@@ -28998,16 +29072,16 @@ var LogoutButton = function (_React$Component5) {
     return LogoutButton;
 }(_react2.default.Component);
 
-var ImageBoard = function (_React$Component6) {
-    _inherits(ImageBoard, _React$Component6);
+var ImageBoard = function (_React$Component7) {
+    _inherits(ImageBoard, _React$Component7);
 
     function ImageBoard(props) {
         _classCallCheck(this, ImageBoard);
 
-        var _this7 = _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
+        var _this10 = _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
 
-        _this7.addImageDataHandler = function (url, title) {
-            _this7.addImageHandler();
+        _this10.addImageDataHandler = function (url, title) {
+            _this10.addImageHandler();
             fetch('/addimage', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -29020,15 +29094,15 @@ var ImageBoard = function (_React$Component6) {
             }).then(function (j) {
                 console.log(j);
                 var imagesArray = j.slice();
-                _this7.setState({ imagesArray: imagesArray });
+                _this10.setState({ imagesArray: imagesArray });
             });
         };
 
-        _this7.addImageHandler = function () {
-            _this7.setState({ addimage: !_this7.state.addimage });
+        _this10.addImageHandler = function () {
+            _this10.setState({ addimage: !_this10.state.addimage });
         };
 
-        _this7.state = {
+        _this10.state = {
             addimage: false,
             imagesArray: []
         };
@@ -29041,18 +29115,18 @@ var ImageBoard = function (_React$Component6) {
         }).then(function (j) {
             console.log(j);
             var imagesArray = j.slice();
-            _this7.setState({ imagesArray: imagesArray });
+            _this10.setState({ imagesArray: imagesArray });
         });
-        return _this7;
+        return _this10;
     }
 
     _createClass(ImageBoard, [{
         key: "render",
         value: function render() {
-            var _this8 = this;
+            var _this11 = this;
 
             var images = this.state.imagesArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this8.props.store, image: image });
+                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29089,62 +29163,155 @@ var ImageBoard = function (_React$Component6) {
     return ImageBoard;
 }(_react2.default.Component);
 
-var AddImage = function (_React$Component7) {
-    _inherits(AddImage, _React$Component7);
+var UserImageBoard = function (_React$Component8) {
+    _inherits(UserImageBoard, _React$Component8);
+
+    function UserImageBoard(props) {
+        _classCallCheck(this, UserImageBoard);
+
+        var _this12 = _possibleConstructorReturn(this, (UserImageBoard.__proto__ || Object.getPrototypeOf(UserImageBoard)).call(this, props));
+
+        _this12.addImageDataHandler = function (url, title) {
+            _this12.addImageHandler();
+            fetch('/adduserimage', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: 'include',
+                body: JSON.stringify({ "url": url,
+                    "title": title
+                })
+            }).then(function (data) {
+                return data.json();
+            }).then(function (j) {
+                console.log(j);
+                var imagesArray = j.slice();
+                _this12.setState({ imagesArray: imagesArray });
+            });
+        };
+
+        _this12.addImageHandler = function () {
+            _this12.setState({ addimage: !_this12.state.addimage });
+        };
+
+        _this12.state = {
+            addimage: false,
+            imagesArray: []
+        };
+        fetch('/getuserimages', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
+            body: JSON.stringify({ "user": _this12.props.user
+            })
+        }).then(function (data) {
+            return data.json();
+        }).then(function (j) {
+            console.log(j);
+            var imagesArray = j.slice();
+            _this12.setState({ imagesArray: imagesArray });
+        });
+        return _this12;
+    }
+
+    _createClass(UserImageBoard, [{
+        key: "render",
+        value: function render() {
+            var _this13 = this;
+
+            var images = this.state.imagesArray.map(function (image, index) {
+                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image });
+            });
+            var display = _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement(UserBoardInfoMenu, { addImageHandler: this.addImageHandler, store: this.props.store, user: this.props.user }),
+                images
+            );
+
+            var divStyle = {
+                width: '100%',
+                height: '100vh',
+                paddingTop: 60
+            };
+            return _react2.default.createElement(
+                "div",
+                { style: divStyle },
+                _react2.default.createElement(
+                    _reactMasonryComponent2.default,
+                    {
+                        className: 'my-gallery-class' // default ''
+                        , elementType: 'ul' // default 'div'
+                        , options: { itemSelector: '.grid-item',
+                            columnWidth: 290 } // default {}
+                        , disableImagesLoaded: false // default false
+                        , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
+                    },
+                    display
+                ),
+                _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+            );
+        }
+    }]);
+
+    return UserImageBoard;
+}(_react2.default.Component);
+
+var AddImage = function (_React$Component9) {
+    _inherits(AddImage, _React$Component9);
 
     function AddImage(props) {
         _classCallCheck(this, AddImage);
 
-        var _this9 = _possibleConstructorReturn(this, (AddImage.__proto__ || Object.getPrototypeOf(AddImage)).call(this, props));
+        var _this14 = _possibleConstructorReturn(this, (AddImage.__proto__ || Object.getPrototypeOf(AddImage)).call(this, props));
 
-        _this9.createAccount = function (history) {
+        _this14.createAccount = function (history) {
 
             fetch('/createnewuser', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',
-                body: JSON.stringify({ "username": _this9.state.usernameSignupInput,
-                    "password": _this9.state.passwordSignupInput,
-                    "email": _this9.state.emailSignupInput
+                body: JSON.stringify({ "username": _this14.state.usernameSignupInput,
+                    "password": _this14.state.passwordSignupInput,
+                    "email": _this14.state.emailSignupInput
                 })
             }).then(function (data) {
                 return data.json();
             }).then(function (j) {
                 if (Object.keys(j).length === 0) {
                     console.log('fail');
-                    _this9.setState({ fail: true });
+                    _this14.setState({ fail: true });
                 } else {
                     console.log('pushing to homepage');
                     console.log(j);
-                    _this9.props.store.loginUser(j);
-                    console.log(_this9.props);
+                    _this14.props.store.loginUser(j);
+                    console.log(_this14.props);
                     history.push('/main');
                 }
             });
         };
 
-        _this9.handleUrlChange = function (event) {
-            _this9.setState({
+        _this14.handleUrlChange = function (event) {
+            _this14.setState({
                 urlInput: event.target.value
             });
         };
 
-        _this9.handleTitleChange = function (event) {
-            _this9.setState({
+        _this14.handleTitleChange = function (event) {
+            _this14.setState({
                 titleInput: event.target.value
             });
         };
 
-        _this9.handleSubmit = function () {
-            _this9.props.addImageDataHandler(_this9.state.urlInput, _this9.state.titleInput);
-            _this9.setState({ urlInput: '', titleInput: '' });
+        _this14.handleSubmit = function () {
+            _this14.props.addImageDataHandler(_this14.state.urlInput, _this14.state.titleInput);
+            _this14.setState({ urlInput: '', titleInput: '' });
         };
 
-        _this9.state = {
+        _this14.state = {
             urlInput: '',
             titleInput: ''
         };
-        return _this9;
+        return _this14;
     }
 
     _createClass(AddImage, [{
@@ -29300,8 +29467,8 @@ var AddImage = function (_React$Component7) {
     return AddImage;
 }(_react2.default.Component);
 
-var Image = function (_React$Component8) {
-    _inherits(Image, _React$Component8);
+var Image = function (_React$Component10) {
+    _inherits(Image, _React$Component10);
 
     function Image(props) {
         _classCallCheck(this, Image);
@@ -29468,8 +29635,8 @@ var Image = function (_React$Component8) {
     return Image;
 }(_react2.default.Component);
 
-var BoardInfoMenu = function (_React$Component9) {
-    _inherits(BoardInfoMenu, _React$Component9);
+var BoardInfoMenu = function (_React$Component11) {
+    _inherits(BoardInfoMenu, _React$Component11);
 
     function BoardInfoMenu(props) {
         _classCallCheck(this, BoardInfoMenu);
@@ -29542,6 +29709,94 @@ var BoardInfoMenu = function (_React$Component9) {
     }]);
 
     return BoardInfoMenu;
+}(_react2.default.Component);
+
+var UserBoardInfoMenu = function (_React$Component12) {
+    _inherits(UserBoardInfoMenu, _React$Component12);
+
+    function UserBoardInfoMenu(props) {
+        _classCallCheck(this, UserBoardInfoMenu);
+
+        return _possibleConstructorReturn(this, (UserBoardInfoMenu.__proto__ || Object.getPrototypeOf(UserBoardInfoMenu)).call(this, props));
+    }
+
+    _createClass(UserBoardInfoMenu, [{
+        key: "render",
+        value: function render() {
+
+            var divStyle = {
+                display: 'inline-block',
+                width: 270,
+                margin: "10px 10px 10px 10px",
+                padding: 0,
+                verticalAlign: 'top',
+                overflow: 'hidden',
+                overflowX: 'hidden',
+                borderRadius: 5,
+                textAlign: 'center'
+            };
+            var h1Style = {
+                display: 'inline-block',
+                color: 'darkred',
+                fontFamily: 'Tahoma',
+                fontWeight: 900
+            };
+            var addImageButtonStyle = {
+                display: 'inline-block',
+                height: 40,
+                backgroundColor: '#56D0FF',
+                margin: '5px 0px 0px 0px',
+                padding: '5px 10px 5px 10px',
+                fontSize: 18,
+                fontFamily: 'Tahoma',
+                border: 'none',
+                borderRadius: 5,
+                boxShadow: 'none',
+                fontWeight: 900,
+                color: 'white'
+            };
+            if (this.props.store.user.username == '') {
+                return _react2.default.createElement(
+                    "div",
+                    { style: divStyle, className: "grid-item" },
+                    _react2.default.createElement(
+                        "h1",
+                        { style: h1Style },
+                        "Browsing All Images"
+                    )
+                );
+            } else if (this.props.store.user.username == this.props.user) {
+                return _react2.default.createElement(
+                    "div",
+                    { style: divStyle, className: "grid-item" },
+                    _react2.default.createElement(
+                        "h1",
+                        { style: h1Style },
+                        "Browsing Your Images"
+                    ),
+                    _react2.default.createElement(
+                        "button",
+                        { style: addImageButtonStyle, onClick: this.props.addImageHandler },
+                        "Add Image"
+                    )
+                );
+            } else {
+                return _react2.default.createElement(
+                    "div",
+                    { style: divStyle, className: "grid-item" },
+                    _react2.default.createElement(
+                        "h1",
+                        { style: h1Style },
+                        "Browsing ",
+                        this.props.user,
+                        "'s Images"
+                    )
+                );
+            }
+        }
+    }]);
+
+    return UserBoardInfoMenu;
 }(_react2.default.Component);
 
 exports.default = Main;
