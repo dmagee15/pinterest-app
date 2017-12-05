@@ -29080,6 +29080,22 @@ var ImageBoard = function (_React$Component7) {
 
         var _this10 = _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
 
+        _this10.pinImageHandler = function (id) {
+            fetch('/pinimage', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: 'include',
+                body: JSON.stringify({ "id": id, 'user': ''
+                })
+            }).then(function (data) {
+                return data.json();
+            }).then(function (j) {
+                console.log(j);
+                var imagesArray = j.slice();
+                _this10.setState({ imagesArray: imagesArray });
+            });
+        };
+
         _this10.addImageDataHandler = function (url, title) {
             _this10.addImageHandler();
             fetch('/addimage', {
@@ -29126,7 +29142,7 @@ var ImageBoard = function (_React$Component7) {
             var _this11 = this;
 
             var images = this.state.imagesArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image });
+                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image, pinImageHandler: _this11.pinImageHandler });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29170,6 +29186,22 @@ var UserImageBoard = function (_React$Component8) {
         _classCallCheck(this, UserImageBoard);
 
         var _this12 = _possibleConstructorReturn(this, (UserImageBoard.__proto__ || Object.getPrototypeOf(UserImageBoard)).call(this, props));
+
+        _this12.pinImageHandler = function (id) {
+            fetch('/pinimage', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: 'include',
+                body: JSON.stringify({ "id": id, "user": _this12.props.user
+                })
+            }).then(function (data) {
+                return data.json();
+            }).then(function (j) {
+                console.log(j);
+                var imagesArray = j.slice();
+                _this12.setState({ imagesArray: imagesArray });
+            });
+        };
 
         _this12.addImageDataHandler = function (url, title) {
             _this12.addImageHandler();
@@ -29219,7 +29251,7 @@ var UserImageBoard = function (_React$Component8) {
             var _this13 = this;
 
             var images = this.state.imagesArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image });
+                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image, pinImageHandler: _this13.pinImageHandler });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29479,7 +29511,8 @@ var Image = function (_React$Component10) {
     _createClass(Image, [{
         key: "render",
         value: function render() {
-            var _infoButtonStyle;
+            var _infoButtonStyle,
+                _this16 = this;
 
             var thumbnailStyle = {
                 minHeight: 150,
@@ -29515,14 +29548,6 @@ var Image = function (_React$Component10) {
                 overflow: 'hidden',
                 overflowX: 'hidden',
                 borderRadius: 5
-            };
-            var img2Style = {
-                width: '100%',
-                minHeight: 150,
-                flex: 1,
-                backgroundSize: 'cover',
-                backgroundImage: "url('" + 'http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg' + "')",
-                display: 'inline-block'
             };
             var imgStyle = {
                 width: '100%',
@@ -29616,10 +29641,18 @@ var Image = function (_React$Component10) {
                     _react2.default.createElement(
                         "div",
                         { style: pinSectionStyle },
-                        _react2.default.createElement(
+                        this.props.image.pinusers.indexOf(this.props.store.user.username) == -1 ? _react2.default.createElement(
                             "button",
-                            { style: searchButtonStyle },
+                            { onClick: function onClick() {
+                                    _this16.props.pinImageHandler(_this16.props.image._id);
+                                }, style: searchButtonStyle },
                             _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48.png" })
+                        ) : _react2.default.createElement(
+                            "button",
+                            { onClick: function onClick() {
+                                    _this16.props.pinImageHandler(_this16.props.image._id);
+                                }, style: searchButtonStyle },
+                            _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48 (1).png" })
                         ),
                         _react2.default.createElement(
                             "p",

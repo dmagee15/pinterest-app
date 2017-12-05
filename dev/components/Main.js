@@ -319,6 +319,22 @@ class ImageBoard extends React.Component{
 
         });
     }
+    pinImageHandler = (id) => {
+        fetch('/pinimage', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"id":id, 'user':''
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log(j);
+            var imagesArray = j.slice();
+            this.setState({imagesArray});
+
+        });
+    }
     addImageDataHandler = (url, title) => {
         this.addImageHandler();
         fetch('/addimage', {
@@ -342,7 +358,7 @@ class ImageBoard extends React.Component{
     }
    render(){
             var images = this.state.imagesArray.map((image, index) => 
-		   <Image key={index} store={this.props.store} image={image} />
+		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler}/>
 		    );
 		    var display = 
 		        <div>
@@ -396,6 +412,22 @@ class UserImageBoard extends React.Component{
 
         });
     }
+    pinImageHandler = (id) => {
+        fetch('/pinimage', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        body: JSON.stringify({"id":id, "user":this.props.user
+        })
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log(j);
+            var imagesArray = j.slice();
+            this.setState({imagesArray});
+
+        });
+    }
     addImageDataHandler = (url, title) => {
         this.addImageHandler();
         fetch('/adduserimage', {
@@ -419,7 +451,7 @@ class UserImageBoard extends React.Component{
     }
    render(){
             var images = this.state.imagesArray.map((image, index) => 
-		   <Image key={index} store={this.props.store} image={image} />
+		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler}/>
 		    );
 		    var display = 
 		        <div>
@@ -676,14 +708,6 @@ class Image extends React.Component{
             overflowX: 'hidden',
             borderRadius: 5
         }
-        var img2Style = {
-            width: '100%',
-            minHeight: 150,
-            flex: 1,
-            backgroundSize: 'cover',
-            backgroundImage: "url('"+'http://s2.quickmeme.com/img/9b/9b813f1bbcc2f083e4961d02e857c5807c1a05d9ce27ffa51b16fea72de6c207.jpg'+"')",
-            display:'inline-block'
-        }
         var imgStyle = {
             width: '100%',
             minHeight: 150,
@@ -764,7 +788,13 @@ class Image extends React.Component{
                     <button style={searchButtonStyle}>{this.props.image.username}</button>
 
                     <div style={pinSectionStyle}>
-                    <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></button>
+                    {
+                        (this.props.image.pinusers.indexOf(this.props.store.user.username)==-1)?(
+                            <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></button>
+                        ):(
+                            <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48 (1).png"/></button>
+                        )
+                    }
                     <p style={numPinsStyle}>{this.props.image.pinusers.length}</p>
                     </div>
                 </div>

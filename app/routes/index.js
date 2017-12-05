@@ -114,6 +114,52 @@ module.exports = function (app, passport, googleBooks) {
     	
     });
     
+    app.post('/pinimage', function(req,res){
+    	console.log("Fetch request successful");
+    	console.log(req.body.id);
+
+			Image.find({'_id':req.body.id}, function(err,data){
+				if(err) throw err;
+				console.log(data);
+				if(data[0].pinusers.indexOf(req.user.local.username)==-1){
+					Image.findOneAndUpdate({'_id':req.body.id},{$push: {pinusers: req.user.local.username}},{new:true}, function(err,data){
+						if(err) throw err;
+						if(req.body.user==''){
+							Image.find({},function(err,data){
+								if(err) throw err;
+								res.send(data);
+							});
+						}
+						else{
+							Image.find({'username':req.body.user},function(err,data){
+								if(err) throw err;
+								res.send(data);
+							});
+						}
+					});
+				}
+				else{
+					Image.findOneAndUpdate({'_id':req.body.id},{$pull: {pinusers: req.user.local.username}},{new:true}, function(err,data){
+						if(err) throw err;
+						if(req.body.user==''){
+							Image.find({},function(err,data){
+								if(err) throw err;
+								res.send(data);
+							});
+						}
+						else{
+							Image.find({'username':req.body.user},function(err,data){
+								if(err) throw err;
+								res.send(data);
+							});
+						}
+					});
+				}
+			})
+			
+    	
+    });
+    
     app.post('/removebook', function(req,res){
     	console.log("Fetch request successful");
     	console.log(req.body.id);
