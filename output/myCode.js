@@ -29667,14 +29667,39 @@ var Image = function (_React$Component10) {
                 float: 'right',
                 marginRight: 10
             };
-
+            var button = null;
+            if (this.props.store.user.authenticated == false) {
+                button = _react2.default.createElement(
+                    "div",
+                    { style: searchButtonStyle },
+                    _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48.png" })
+                );
+            } else if (this.props.image.pinusers.indexOf(this.props.store.user.username) == -1) {
+                button = _react2.default.createElement(
+                    "button",
+                    { onClick: function onClick() {
+                            _this16.props.pinImageHandler(_this16.props.image._id);
+                        }, style: searchButtonStyle },
+                    _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48.png" })
+                );
+            } else {
+                button = _react2.default.createElement(
+                    "button",
+                    { onClick: function onClick() {
+                            _this16.props.pinImageHandler(_this16.props.image._id);
+                        }, style: searchButtonStyle },
+                    _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48 (1).png" })
+                );
+            }
             return _react2.default.createElement(
                 "div",
                 { style: divStyle, className: "grid-item" },
                 _react2.default.createElement(
                     "div",
                     { style: thumbnailStyle },
-                    _react2.default.createElement("img", { src: this.props.image.url, style: imgStyle })
+                    _react2.default.createElement("img", { src: this.props.image.url, onError: function onError(event) {
+                            return event.target.setAttribute("src", "/output/errorimage.png");
+                        }, style: imgStyle })
                 ),
                 _react2.default.createElement(
                     "div",
@@ -29698,19 +29723,7 @@ var Image = function (_React$Component10) {
                     _react2.default.createElement(
                         "div",
                         { style: pinSectionStyle },
-                        this.props.image.pinusers.indexOf(this.props.store.user.username) == -1 ? _react2.default.createElement(
-                            "button",
-                            { onClick: function onClick() {
-                                    _this16.props.pinImageHandler(_this16.props.image._id);
-                                }, style: searchButtonStyle },
-                            _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48.png" })
-                        ) : _react2.default.createElement(
-                            "button",
-                            { onClick: function onClick() {
-                                    _this16.props.pinImageHandler(_this16.props.image._id);
-                                }, style: searchButtonStyle },
-                            _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-pin-23-48 (1).png" })
-                        ),
+                        button,
                         _react2.default.createElement(
                             "p",
                             { style: numPinsStyle },

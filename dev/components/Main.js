@@ -820,11 +820,20 @@ class Image extends React.Component{
             float:'right',
             marginRight: 10
         };
-
+        var button = null;
+        if(this.props.store.user.authenticated==false){
+            button = <div style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></div>;
+        }
+        else if(this.props.image.pinusers.indexOf(this.props.store.user.username)==-1){
+            button = <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></button>;
+        }
+        else{
+            button = <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48 (1).png"/></button>;
+        }
             return (
                 <div style={divStyle} className="grid-item">
                 <div style={thumbnailStyle}>
-                    <img src={this.props.image.url} style={imgStyle} />
+                    <img src={this.props.image.url} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} style={imgStyle} />
                 </div>
                 <div style={divContentStyle}>
                     <div style={titleContainerStyle}>
@@ -833,13 +842,7 @@ class Image extends React.Component{
                     <button style={searchButtonStyle} onClick={() => {this.props.changeWindowState(this.props.image.username)}}>{this.props.image.username}</button>
 
                     <div style={pinSectionStyle}>
-                    {
-                        (this.props.image.pinusers.indexOf(this.props.store.user.username)==-1)?(
-                            <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></button>
-                        ):(
-                            <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48 (1).png"/></button>
-                        )
-                    }
+                        {button}
                     <p style={numPinsStyle}>{this.props.image.pinusers.length}</p>
                     </div>
                 </div>
