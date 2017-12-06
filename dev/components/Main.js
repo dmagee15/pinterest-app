@@ -9,7 +9,7 @@ class Main extends React.Component{
     constructor(props) {
     super(props);
     this.state = {
-        userWindow: ''
+        userWindow: '',
     }
     }
     changeWindowState = (user) => {
@@ -19,12 +19,11 @@ class Main extends React.Component{
 
             return (
                <div>
-                    <Header store={this.props.store} changeWindowState={this.changeWindowState}/>
                     {
                         (this.state.userWindow=='')?(
-                            <ImageBoard store={this.props.store}/>
+                            <ImageBoard store={this.props.store} changeWindowState={this.changeWindowState}/>
                         ):(
-                            <UserImageBoard store={this.props.store} user={this.state.userWindow}/>
+                            <UserImageBoard store={this.props.store} user={this.state.userWindow} changeWindowState={this.changeWindowState}/>
                         )
                     }
                </div>
@@ -37,8 +36,23 @@ class Main extends React.Component{
 class Header extends React.Component{
     constructor(props) {
     super(props);
+    this.state = {
+        searchInput: '',
+        submitTerm: ''
     }
-    
+    }
+    handleSearchInputChange = (event) => {
+        this.setState({
+            searchInput: event.target.value
+        });
+    }
+    submitSearch = () => {
+        console.log(this.state.searchInput);
+        this.setState({submitTerm:this.state.searchInput,searchInput:''}, function(){
+            this.props.searchSubmitHandler(this.state.submitTerm);
+        });
+
+    }
    render(){
        var divStyle = {
 					padding:0,
@@ -96,8 +110,8 @@ class Header extends React.Component{
         return (
            <div id="header" style={divStyle}>
             <HomeButton float='left' text='Home' store={this.props.store} changeWindowState={this.props.changeWindowState}/>
-            <input type="text" placeholder="Search Images..." style={searchInputStyle}/>
-            <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png"/></button>
+            <input type="text" placeholder="Search Images..." onChange={this.handleSearchInputChange} value={this.state.searchInput} style={searchInputStyle}/>
+            <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png" onClick={this.submitSearch}/></button>
             {(this.props.store.user.authenticated==true)?(
             <div style={{display:'inline-block', float:'right'}}>
                 <LogoutButton float='right' store={this.props.store}/>
@@ -304,7 +318,8 @@ class ImageBoard extends React.Component{
     super(props);
     this.state = {
             addimage: false,
-            imagesArray: []
+            imagesArray: [],
+            searchSubmit: ''
         }
         fetch('/getimages', {
         method: 'GET',
@@ -318,6 +333,9 @@ class ImageBoard extends React.Component{
             this.setState({imagesArray});
 
         });
+    }
+    searchSubmitHandler = (term) => {
+        this.setState({searchSubmit: term});
     }
     pinImageHandler = (id) => {
         fetch('/pinimage', {
@@ -355,10 +373,19 @@ class ImageBoard extends React.Component{
     }
     addImageHandler = () => {
         this.setState({addimage: !this.state.addimage});
+        console.log(this.state.searchSubmit);
     }
    render(){
-            var images = this.state.imagesArray.map((image, index) => 
-		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler}/>
+            var searchArray = [];
+            var length = this.state.imagesArray.length;
+            var regex = new RegExp(this.state.searchSubmit);
+            for(var x=0;x<length;x++){
+                if(regex.test(this.state.imagesArray[x].username)||regex.test(this.state.imagesArray[x].title)){
+                    searchArray.push(this.state.imagesArray[x]);
+                }
+            }
+            var images = searchArray.map((image, index) => 
+		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler} changeWindowState={this.props.changeWindowState}/>
 		    );
 		    var display = 
 		        <div>
@@ -372,6 +399,8 @@ class ImageBoard extends React.Component{
                 paddingTop: 60
             }
             return (
+                <div>
+                <Header store={this.props.store} changeWindowState={this.props.changeWindowState} searchSubmitHandler={this.searchSubmitHandler}/>
                <div style={divStyle}>
                     <Masonry
                 className={'my-gallery-class'} // default ''
@@ -385,6 +414,7 @@ class ImageBoard extends React.Component{
                 </Masonry>
                 <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
                </div>
+               </div>
           ); 
 					
    }
@@ -395,7 +425,8 @@ class UserImageBoard extends React.Component{
     super(props);
     this.state = {
             addimage: false,
-            imagesArray: []
+            imagesArray: [],
+            searchSubmit: ''
         }
         fetch('/getuserimages', {
         method: 'POST',
@@ -411,6 +442,9 @@ class UserImageBoard extends React.Component{
             this.setState({imagesArray});
 
         });
+    }
+    searchSubmitHandler = (term) => {
+        this.setState({searchSubmit: term});
     }
     pinImageHandler = (id) => {
         fetch('/pinimage', {
@@ -450,12 +484,20 @@ class UserImageBoard extends React.Component{
         this.setState({addimage: !this.state.addimage});
     }
    render(){
-            var images = this.state.imagesArray.map((image, index) => 
-		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler}/>
+            var searchArray = [];
+            var length = this.state.imagesArray.length;
+            var regex = new RegExp(this.state.searchSubmit);
+            for(var x=0;x<length;x++){
+                if(regex.test(this.state.imagesArray[x].username)||regex.test(this.state.imagesArray[x].title)){
+                    searchArray.push(this.state.imagesArray[x]);
+                }
+            }
+            var images = searchArray.map((image, index) => 
+		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler} changeWindowState={this.props.changeWindowState}/>
 		    );
 		    var display = 
 		        <div>
-		            <UserBoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store} user={this.props.user}/>
+		            <UserBoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store} user={this.props.user} />
 		            {images}
 		        </div>;
             
@@ -465,6 +507,8 @@ class UserImageBoard extends React.Component{
                 paddingTop: 60
             }
             return (
+                <div>
+                <Header store={this.props.store} changeWindowState={this.props.changeWindowState} searchSubmitHandler={this.searchSubmitHandler}/>
                <div style={divStyle}>
                     <Masonry
                 className={'my-gallery-class'} // default ''
@@ -477,6 +521,7 @@ class UserImageBoard extends React.Component{
                     {display}
                 </Masonry>
                 <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
+               </div>
                </div>
           ); 
 					
@@ -785,7 +830,7 @@ class Image extends React.Component{
                     <div style={titleContainerStyle}>
                     <h3 style={titleStyle}>{this.props.image.title}</h3>
                     </div>
-                    <button style={searchButtonStyle}>{this.props.image.username}</button>
+                    <button style={searchButtonStyle} onClick={() => {this.props.changeWindowState(this.props.image.username)}}>{this.props.image.username}</button>
 
                     <div style={pinSectionStyle}>
                     {

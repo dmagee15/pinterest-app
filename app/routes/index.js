@@ -131,7 +131,7 @@ module.exports = function (app, passport, googleBooks) {
 							});
 						}
 						else{
-							Image.find({'username':req.body.user},function(err,data){
+							Image.find({'pinusers':req.body.user},function(err,data){
 								if(err) throw err;
 								res.send(data);
 							});
@@ -141,17 +141,38 @@ module.exports = function (app, passport, googleBooks) {
 				else{
 					Image.findOneAndUpdate({'_id':req.body.id},{$pull: {pinusers: req.user.local.username}},{new:true}, function(err,data){
 						if(err) throw err;
-						if(req.body.user==''){
+						console.log("pull data");
+						console.log(data);
+						if(data.pinusers.length==0){
+							Image.find({'_id':req.body.id}).remove().exec(function(err,data){
+								if(err) throw err;
+								if(req.body.user==''){
+								Image.find({},function(err,data){
+								if(err) throw err;
+								res.send(data);
+							});
+						}
+						else{
+							Image.find({'pinusers':req.body.user},function(err,data){
+								if(err) throw err;
+								res.send(data);
+							});
+						}
+							});
+						}
+						else{
+							if(req.body.user==''){
 							Image.find({},function(err,data){
 								if(err) throw err;
 								res.send(data);
 							});
 						}
 						else{
-							Image.find({'username':req.body.user},function(err,data){
+							Image.find({'pinusers':req.body.user},function(err,data){
 								if(err) throw err;
 								res.send(data);
 							});
+							}
 						}
 					});
 				}
@@ -410,7 +431,7 @@ module.exports = function (app, passport, googleBooks) {
     app.post('/getuserimages', function(req,res){
     	console.log("GET USER IMAGES");
 		console.log(req.body.user);
-    	Image.find({'username':req.body.user}, function(err,data){
+    	Image.find({'pinusers':req.body.user}, function(err,data){
     		if(err) throw err;
     		console.log(JSON.stringify(data));
     		res.send(data);

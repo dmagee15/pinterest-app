@@ -28721,8 +28721,7 @@ var Main = function (_React$Component) {
             return _react2.default.createElement(
                 "div",
                 null,
-                _react2.default.createElement(Header, { store: this.props.store, changeWindowState: this.changeWindowState }),
-                this.state.userWindow == '' ? _react2.default.createElement(ImageBoard, { store: this.props.store }) : _react2.default.createElement(UserImageBoard, { store: this.props.store, user: this.state.userWindow })
+                this.state.userWindow == '' ? _react2.default.createElement(ImageBoard, { store: this.props.store, changeWindowState: this.changeWindowState }) : _react2.default.createElement(UserImageBoard, { store: this.props.store, user: this.state.userWindow, changeWindowState: this.changeWindowState })
             );
         }
     }]);
@@ -28736,7 +28735,26 @@ var Header = function (_React$Component2) {
     function Header(props) {
         _classCallCheck(this, Header);
 
-        return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
+        var _this2 = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
+
+        _this2.handleSearchInputChange = function (event) {
+            _this2.setState({
+                searchInput: event.target.value
+            });
+        };
+
+        _this2.submitSearch = function () {
+            console.log(_this2.state.searchInput);
+            _this2.setState({ submitTerm: _this2.state.searchInput, searchInput: '' }, function () {
+                this.props.searchSubmitHandler(this.state.submitTerm);
+            });
+        };
+
+        _this2.state = {
+            searchInput: '',
+            submitTerm: ''
+        };
+        return _this2;
     }
 
     _createClass(Header, [{
@@ -28799,11 +28817,11 @@ var Header = function (_React$Component2) {
                 "div",
                 { id: "header", style: divStyle },
                 _react2.default.createElement(HomeButton, { float: "left", text: "Home", store: this.props.store, changeWindowState: this.props.changeWindowState }),
-                _react2.default.createElement("input", { type: "text", placeholder: "Search Images...", style: searchInputStyle }),
+                _react2.default.createElement("input", { type: "text", placeholder: "Search Images...", onChange: this.handleSearchInputChange, value: this.state.searchInput, style: searchInputStyle }),
                 _react2.default.createElement(
                     "button",
                     { style: searchButtonStyle },
-                    _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-magnifier-6-48 (1).png" })
+                    _react2.default.createElement("img", { style: searchIconStyle, src: "/output/iconmonstr-magnifier-6-48 (1).png", onClick: this.submitSearch })
                 ),
                 this.props.store.user.authenticated == true ? _react2.default.createElement(
                     "div",
@@ -29080,6 +29098,10 @@ var ImageBoard = function (_React$Component7) {
 
         var _this10 = _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
 
+        _this10.searchSubmitHandler = function (term) {
+            _this10.setState({ searchSubmit: term });
+        };
+
         _this10.pinImageHandler = function (id) {
             fetch('/pinimage', {
                 method: 'POST',
@@ -29116,11 +29138,13 @@ var ImageBoard = function (_React$Component7) {
 
         _this10.addImageHandler = function () {
             _this10.setState({ addimage: !_this10.state.addimage });
+            console.log(_this10.state.searchSubmit);
         };
 
         _this10.state = {
             addimage: false,
-            imagesArray: []
+            imagesArray: [],
+            searchSubmit: ''
         };
         fetch('/getimages', {
             method: 'GET',
@@ -29141,8 +29165,16 @@ var ImageBoard = function (_React$Component7) {
         value: function render() {
             var _this11 = this;
 
-            var images = this.state.imagesArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image, pinImageHandler: _this11.pinImageHandler });
+            var searchArray = [];
+            var length = this.state.imagesArray.length;
+            var regex = new RegExp(this.state.searchSubmit);
+            for (var x = 0; x < length; x++) {
+                if (regex.test(this.state.imagesArray[x].username) || regex.test(this.state.imagesArray[x].title)) {
+                    searchArray.push(this.state.imagesArray[x]);
+                }
+            }
+            var images = searchArray.map(function (image, index) {
+                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image, pinImageHandler: _this11.pinImageHandler, changeWindowState: _this11.props.changeWindowState });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29158,20 +29190,25 @@ var ImageBoard = function (_React$Component7) {
             };
             return _react2.default.createElement(
                 "div",
-                { style: divStyle },
+                null,
+                _react2.default.createElement(Header, { store: this.props.store, changeWindowState: this.props.changeWindowState, searchSubmitHandler: this.searchSubmitHandler }),
                 _react2.default.createElement(
-                    _reactMasonryComponent2.default,
-                    {
-                        className: 'my-gallery-class' // default ''
-                        , elementType: 'ul' // default 'div'
-                        , options: { itemSelector: '.grid-item',
-                            columnWidth: 290 } // default {}
-                        , disableImagesLoaded: false // default false
-                        , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
-                    },
-                    display
-                ),
-                _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+                    "div",
+                    { style: divStyle },
+                    _react2.default.createElement(
+                        _reactMasonryComponent2.default,
+                        {
+                            className: 'my-gallery-class' // default ''
+                            , elementType: 'ul' // default 'div'
+                            , options: { itemSelector: '.grid-item',
+                                columnWidth: 290 } // default {}
+                            , disableImagesLoaded: false // default false
+                            , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
+                        },
+                        display
+                    ),
+                    _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+                )
             );
         }
     }]);
@@ -29186,6 +29223,10 @@ var UserImageBoard = function (_React$Component8) {
         _classCallCheck(this, UserImageBoard);
 
         var _this12 = _possibleConstructorReturn(this, (UserImageBoard.__proto__ || Object.getPrototypeOf(UserImageBoard)).call(this, props));
+
+        _this12.searchSubmitHandler = function (term) {
+            _this12.setState({ searchSubmit: term });
+        };
 
         _this12.pinImageHandler = function (id) {
             fetch('/pinimage', {
@@ -29227,7 +29268,8 @@ var UserImageBoard = function (_React$Component8) {
 
         _this12.state = {
             addimage: false,
-            imagesArray: []
+            imagesArray: [],
+            searchSubmit: ''
         };
         fetch('/getuserimages', {
             method: 'POST',
@@ -29250,8 +29292,16 @@ var UserImageBoard = function (_React$Component8) {
         value: function render() {
             var _this13 = this;
 
-            var images = this.state.imagesArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image, pinImageHandler: _this13.pinImageHandler });
+            var searchArray = [];
+            var length = this.state.imagesArray.length;
+            var regex = new RegExp(this.state.searchSubmit);
+            for (var x = 0; x < length; x++) {
+                if (regex.test(this.state.imagesArray[x].username) || regex.test(this.state.imagesArray[x].title)) {
+                    searchArray.push(this.state.imagesArray[x]);
+                }
+            }
+            var images = searchArray.map(function (image, index) {
+                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image, pinImageHandler: _this13.pinImageHandler, changeWindowState: _this13.props.changeWindowState });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29267,20 +29317,25 @@ var UserImageBoard = function (_React$Component8) {
             };
             return _react2.default.createElement(
                 "div",
-                { style: divStyle },
+                null,
+                _react2.default.createElement(Header, { store: this.props.store, changeWindowState: this.props.changeWindowState, searchSubmitHandler: this.searchSubmitHandler }),
                 _react2.default.createElement(
-                    _reactMasonryComponent2.default,
-                    {
-                        className: 'my-gallery-class' // default ''
-                        , elementType: 'ul' // default 'div'
-                        , options: { itemSelector: '.grid-item',
-                            columnWidth: 290 } // default {}
-                        , disableImagesLoaded: false // default false
-                        , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
-                    },
-                    display
-                ),
-                _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+                    "div",
+                    { style: divStyle },
+                    _react2.default.createElement(
+                        _reactMasonryComponent2.default,
+                        {
+                            className: 'my-gallery-class' // default ''
+                            , elementType: 'ul' // default 'div'
+                            , options: { itemSelector: '.grid-item',
+                                columnWidth: 290 } // default {}
+                            , disableImagesLoaded: false // default false
+                            , updateOnEachImageLoad: false // default false and works only if disableImagesLoaded is false
+                        },
+                        display
+                    ),
+                    _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+                )
             );
         }
     }]);
@@ -29635,7 +29690,9 @@ var Image = function (_React$Component10) {
                     ),
                     _react2.default.createElement(
                         "button",
-                        { style: searchButtonStyle },
+                        { style: searchButtonStyle, onClick: function onClick() {
+                                _this16.props.changeWindowState(_this16.props.image.username);
+                            } },
                         this.props.image.username
                     ),
                     _react2.default.createElement(
