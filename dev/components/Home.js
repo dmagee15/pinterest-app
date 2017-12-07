@@ -53,14 +53,38 @@ class Welcome extends React.Component{
         loginForm: true,
         usernameSignupInput: '',
         passwordSignupInput: '',
-        emailSignupInput: ''
+        emailSignupInput: '',
+        loginFail: false,
+        signupFail: false
         }
     }
     loginGuest = (history) => {
 
         history.push('/main');
     }
+    loginTwitter = (history) => {
+        fetch('/twitterlogin', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        mode: 'no-cors'
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log('pushing to homepage');
+            if(Object.keys(j).length === 0){
+                console.log('fail');
+                this.setState({loginFail:true});
+            }
+            else{
+                console.log(j);
+                this.props.store.loginUser(j);
+                console.log(this.props);
+                history.push('/main');
+            }
 
+        });
+    }
 
     loginAccount = (history) => {
         
@@ -77,7 +101,7 @@ class Welcome extends React.Component{
             console.log('pushing to homepage');
             if(Object.keys(j).length === 0){
                 console.log('fail');
-                this.setState({fail:true});
+                this.setState({loginFail:true});
             }
             else{
                 console.log(j);
@@ -104,7 +128,7 @@ class Welcome extends React.Component{
         }).then((j) =>{
             if(Object.keys(j).length === 0){
                 console.log('fail');
-                this.setState({fail:true});
+                this.setState({signupFail:true});
             }
             else{
             console.log('pushing to homepage');
@@ -153,6 +177,9 @@ class Welcome extends React.Component{
             this.setState({loginForm: false})
         }
     }
+    unauthenticatedbrowse = (history) => {
+        history.push('/main');
+    }
     render(){
 
     const modalStyle = {
@@ -170,7 +197,7 @@ class Welcome extends React.Component{
     };
     var inputStyle = {
 		padding:'0px 0px 0px 10px',
-		margin: "25px 0 0 0",
+		margin: "0px 0 0 0",
 		width: '70%',
 		height:35,
 		border: '1px solid gray',
@@ -194,7 +221,7 @@ class Welcome extends React.Component{
 	    marginTop: 5
 	};
 	var loginButtonDiv = {
-	    height: 75,
+	    height: 50,
 	    width: '100%',
 	    textAlign: 'left'
 	};
@@ -202,7 +229,7 @@ class Welcome extends React.Component{
         display:'inline-block',
         height: 40,
         backgroundColor: '#56FF5B',
-        margin: '25px 5px 0px 40px',
+        margin: '0px 5px 0px 40px',
         padding: '5px 10px 5px 10px',
         fontSize: 18,
 		fontFamily: 'Tahoma',
@@ -216,7 +243,7 @@ class Welcome extends React.Component{
         display:'inline-block',
         height: 40,
         backgroundColor: '#56D0FF',
-        margin: '25px 5px 0px 10px',
+        margin: '0px 5px 0px 10px',
         padding: '5px 10px 5px 10px',
         fontSize: 18,
 		fontFamily: 'Tahoma',
@@ -241,7 +268,11 @@ class Welcome extends React.Component{
         color: '#56D0FF',
         fontSize: 18,
         fontWeight: 900,
-        fontFamily: 'Arial Black'
+        fontFamily: 'Arial Black',
+        border: 'none',
+        padding: '0 0 0 0',
+        margin: '0 0 0 5px',
+        backgroundColor: 'white'
     };
     var guestDivStyle = {
         textAlign:'left'
@@ -305,6 +336,18 @@ class Welcome extends React.Component{
         margin: 0,
         padding: '5px 0px 0px 0px'
     };
+    var errorTextStyle = {
+        display: 'inline-block',
+        fontSize: 15,
+        color: 'red',
+        margin: 0,
+        padding: '3px 0 0 0'
+    }
+    var errorDivStyle = {
+        width: '100%',
+        textAlign: 'center',
+        height: 25
+    }
     if(this.state.loginForm){
         return (
             <div className="modal" style={modalStyle}>
@@ -317,26 +360,39 @@ class Welcome extends React.Component{
                     </button>
                     </div>
                     <div>
+                        <div style={errorDivStyle}></div>
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-user-5-48.png" />
                         </div>
                         <input style={inputStyle} type="text" placeholder="Username" value={this.state.usernameInput} onChange={this.handleUsernameChange}/>
                     </div>
                     <div>
+                        <div style={errorDivStyle}>
+                        {
+                            this.state.loginFail==true &&
+                            <p style={errorTextStyle}>Username/password combination invalid</p>
+                        }
+                        </div>
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-lock-3-48.png" />
                         </div>
                         <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordInput} onChange={this.handlePasswordChange}/>
+                        <div style={errorDivStyle}></div>
                     </div>
                     <div style={loginButtonDiv}>
                     <Route render={({ history}) => (
                         <button style={loginButtonStyle} onClick={() => this.loginAccount(history)}>Login</button>
                     )}/>
-                        <button style={twitterButtonStyle}>Login with Twitter</button>
+                    <Route render={({ history}) => (
+                        <button style={twitterButtonStyle} onClick={()=>{this.loginTwitter(history)}}>Login with Twitter</button>
+                    )}/>
                     </div>
                     <div style={guestDivStyle}>
                     <hr style={hrStyle}/>
-                    <p style={guestpStyle}>Or browse images as a <span style={guestStyle}>Guest</span></p>
+                    <p style={guestpStyle}>Or browse images as a </p>
+                    <Route render={({ history}) => (
+                    <button style={guestStyle} onClick={()=>{this.unauthenticatedbrowse(history)}}>Guest</button>
+                    )}/>
                     </div>
             </div>
 
@@ -354,23 +410,32 @@ class Welcome extends React.Component{
                     </button>
                     </div>
                     <div>
+                        <div style={errorDivStyle}></div>
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-user-5-48.png" />
                         </div>
                         <input style={inputStyle} type="text" placeholder="Username" value={this.state.usernameSignupInput} onChange={this.handleUsernameSignupChange}/>
                     </div>
                     <div>
+                        <div style={errorDivStyle}>
+                        {
+                            this.state.signupFail==true &&
+                            <p style={errorTextStyle}>Username already taken</p>
+                        }
+                        </div>
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-lock-3-48.png" />
                         </div>
                         <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordSignupInput} onChange={this.handlePasswordSignupChange}/>
                     </div>
                     <div>
+                        <div style={errorDivStyle}></div>
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-email-1-48.png" />
                         </div>
                         <input style={inputStyle} type="text" placeholder="Email" value={this.state.emailSignupInput} onChange={this.handleEmailSignupChange}/>
                     </div>
+                    <div style={errorDivStyle}></div>
                     <div style={loginButtonDiv}>
                         <Route render={({ history}) => (
                         <button style={loginButtonStyle} onClick={() => this.createAccount(history)}>Sign Up</button>

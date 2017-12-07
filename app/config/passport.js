@@ -1,6 +1,7 @@
 'use strict';
 
 var LocalStrategy = require('passport-local').Strategy;
+var TwitterStrategy = require('passport-twitter').Strategy;
 var User = require('../models/users');
 var configAuth = require('./auth');
 
@@ -14,7 +15,46 @@ module.exports = function (passport) {
 			done(err, user);
 		});
 	});
+    passport.use('twitter', new TwitterStrategy({
+    consumerKey: configAuth.twitterAuth.clientID,
+    consumerSecret: configAuth.twitterAuth.clientSecret,
+    callbackURL: configAuth.twitterAuth.callbackURL
+    },
+    function(token, tokenSecret, profile, cb) {
+        console.log("TWITTER PROFILE");
+        console.log(profile);
+    User.findOrCreate({ twitterId: profile.id }, function (err, user) {
+        process.nextTick(function () {
+			User.findOne({ 'local.username': profile.id }, function (err, user) {
+				if (err) {
+					return cb(err);
+				}
 
+				if (user) {
+					return cb(null, user);
+				} else {
+/*					var newUser = new User();
+					newUser.github.id = profile.id;
+					newUser.github.username = profile.username;
+					newUser.github.displayName = profile.displayName;
+					newUser.github.publicRepos = profile._json.public_repos;
+					newUser.nbrClicks.clicks = 0;
+
+					newUser.save(function (err) {
+						if (err) {
+							throw err;
+						}
+
+						return cb(null, newUser);
+					}); */
+					return cb(null,profile);
+				}
+			});
+		});
+        });
+        }
+    ));
+    
 	passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'username',

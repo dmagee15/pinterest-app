@@ -51,6 +51,11 @@ module.exports = function (app, passport, googleBooks) {
 		});
 	});
 	
+	app.post('/twitterlogin', passport.authenticate('twitter', { failureRedirect: '/loginfail', failureFlash: false }), function(req,res){
+		console.log(req.user);
+		res.end();
+	});
+	
 	app.get('/loginfail', function(req,res){
 		res.send({});
 	});
@@ -288,120 +293,6 @@ module.exports = function (app, passport, googleBooks) {
     	
     });
     
-    app.post('/approverequest', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.id);
-    	User.find({'local.username':req.body.tradeRequestUser}, function(err,userdata){
-    		if(err) throw err;
-    		Book.findOneAndUpdate({'_id':req.body.id},{tradeConfirmUser: req.body.tradeRequestUser, tradeConfirmDate: new Date(), tradeConfirmCity: userdata[0].local.city, tradeConfirmState: userdata[0].local.state, tradeConfirmEmail: userdata[0].local.email},{new:true}, function(err,data){
-    		if(err) throw err;
-    		console.log("username: "+req.user.local.username);
-    		console.log(JSON.stringify(data));
-    		User.find({}, function(err,users){
-				console.log("USERS");
-				console.log(users);
-    	Book.find({username: req.user.local.username, $where : "this.tradeRequests.length != 0"}, function(err,data){
-    		if(err) throw err;
-
-    		var result = [];
-    		var length=data.length;
-    		var usernameArray = [];
-    		for(var z=0;z<users.length;z++){
-    			usernameArray.push(users[z].local.username);
-    		}
-    		for(var x=0;x<length;x++){
-    			var requestLength = data[x].tradeRequests.length;
-    			for(var y=0;y<requestLength;y++){
-						
-    					var request = {
-    					"_id": data[x]._id,
-    					"tradeConfirmDate": data[x].tradeConfirmDate,
-    					"tradeConfirmUser": data[x].tradeConfirmUser,
-    					"tradeConfirmCity": data[x].tradeConfirmCity,
-    					"tradeConfirmState": data[x].tradeConfirmState,
-    					"tradeConfirmEmail": data[x].tradeConfirmEmail,
-    					"email": data[x].email,
-    					"username": data[x].username,
-    					"city": data[x].city,
-    					"state": data[x].state,
-    					"fullName": data[x].fullName,
-    					"description": data[x].description,
-    					"pageCount": data[x].pageCount,
-    					"publishedDate": data[x].publishedDate,
-    					"author": data[x].author,
-    					"thumbnail": data[x].thumbnail,
-    					"title": data[x].title,
-    					"tradeRequestUser": data[x].tradeRequests[y],
-    					"tradeRequestCity": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.city,
-    					"tradeRequestState": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.state
-    				}
-    				result.push(request);
-
-    			}
-    		}
-    		res.send(result);
-    	});
-		});
-    	});
-    	});
-    });
-    
-    app.post('/unapproverequest', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.id);
-    	
-    	Book.findOneAndUpdate({'_id':req.body.id},{tradeConfirmUser: '', tradeConfirmDate: '', tradeConfirmCity: '', tradeConfirmState: '', tradeConfirmEmail: ''},{new:true}, function(err,data){
-    		if(err) throw err;
-    		console.log("username: "+req.user.local.username);
-    		console.log(JSON.stringify(data));
-    		User.find({}, function(err,users){
-				console.log("USERS");
-				console.log(users);
-    	Book.find({username: req.user.local.username, $where : "this.tradeRequests.length != 0"}, function(err,data){
-    		if(err) throw err;
-
-    		var result = [];
-    		var length=data.length;
-    		var usernameArray = [];
-    		for(var z=0;z<users.length;z++){
-    			usernameArray.push(users[z].local.username);
-    		}
-    		for(var x=0;x<length;x++){
-    			var requestLength = data[x].tradeRequests.length;
-    			for(var y=0;y<requestLength;y++){
-						
-    					var request = {
-    					"_id": data[x]._id,
-    					"tradeConfirmDate": data[x].tradeConfirmDate,
-    					"tradeConfirmUser": data[x].tradeConfirmUser,
-    					"tradeConfirmCity": data[x].tradeConfirmCity,
-    					"tradeConfirmState": data[x].tradeConfirmState,
-    					"tradeConfirmEmail": data[x].tradeConfirmEmail,
-    					"email": data[x].email,
-    					"username": data[x].username,
-    					"city": data[x].city,
-    					"state": data[x].state,
-    					"fullName": data[x].fullName,
-    					"description": data[x].description,
-    					"pageCount": data[x].pageCount,
-    					"publishedDate": data[x].publishedDate,
-    					"author": data[x].author,
-    					"thumbnail": data[x].thumbnail,
-    					"title": data[x].title,
-    					"tradeRequestUser": data[x].tradeRequests[y],
-    					"tradeRequestCity": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.city,
-    					"tradeRequestState": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.state
-    				}
-    				result.push(request);
-
-    			}
-    		}
-    		res.send(result);
-    	});
-		});
-    	});
-    	
-    });
     
     
     app.get('/getprofiledata', function(req,res){
@@ -439,107 +330,6 @@ module.exports = function (app, passport, googleBooks) {
     	
     });
     
-    app.get('/getyourtraderequests', function(req,res){
-    	console.log("Fetch request successful");
-
-    	Book.find({tradeRequests: req.user.local.username }, function(err,data){
-    		if(err) throw err;
-    		console.log("GET YOUR TRADE REQUESTS");
-    		console.log(JSON.stringify(data));
-    		res.send(data);
-    	});
-    	
-    });
-    
-    app.get('/getrequestsforyou', function(req,res){
-    	console.log("Fetch request successful");
-		User.find({}, function(err,users){
-				console.log("USERS");
-				console.log(users);
-    	Book.find({username: req.user.local.username, $where : "this.tradeRequests.length != 0"}, function(err,data){
-    		if(err) throw err;
-
-    		var result = [];
-    		var length=data.length;
-    		var usernameArray = [];
-    		for(var z=0;z<users.length;z++){
-    			usernameArray.push(users[z].local.username);
-    		}
-    		for(var x=0;x<length;x++){
-    			var requestLength = data[x].tradeRequests.length;
-    			for(var y=0;y<requestLength;y++){
-						
-    					var request = {
-    					"_id": data[x]._id,
-    					"tradeConfirmDate": data[x].tradeConfirmDate,
-    					"tradeConfirmUser": data[x].tradeConfirmUser,
-    					"tradeConfirmCity": data[x].tradeConfirmCity,
-    					"tradeConfirmState": data[x].tradeConfirmState,
-    					"tradeConfirmEmail": data[x].tradeConfirmEmail,
-    					"email": data[x].email,
-    					"username": data[x].username,
-    					"city": data[x].city,
-    					"state": data[x].state,
-    					"fullName": data[x].fullName,
-    					"description": data[x].description,
-    					"pageCount": data[x].pageCount,
-    					"publishedDate": data[x].publishedDate,
-    					"author": data[x].author,
-    					"thumbnail": data[x].thumbnail,
-    					"title": data[x].title,
-    					"tradeRequestUser": data[x].tradeRequests[y],
-    					"tradeRequestCity": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.city,
-    					"tradeRequestState": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.state
-    				}
-    				result.push(request);
-
-    			}
-    		}
-    		res.send(result);
-    	});
-		});
-    });
-    
-    app.post('/requestbook', function(req,res){
-    	console.log("Fetch request successful");
-
-    	Book.find({'_id':req.body.id}, function(err,data){
-    		if(err) throw err;
-    		console.log(JSON.stringify(data));
-    		if(data[0].username == req.user.local.username){
-    			console.log("this is your book");
-    			Book.find({}, function(err,data){
-    					if(err) throw err;
-    					console.log(JSON.stringify(data));
-    					res.send(data);
-    				});
-    		}
-    		else
-    		if(data[0].tradeRequests.indexOf(req.user.local.username)==-1){
-    			Book.findOneAndUpdate({'_id':req.body.id},{$push: {tradeRequests: req.user.local.username}},{new:true}, function(err,data){
-    				if(err) throw err;
-    				console.log("tradeRequests: "+data.tradeRequests);
-    				Book.find({}, function(err,data){
-    					if(err) throw err;
-    					console.log(JSON.stringify(data));
-    					res.send(data);
-    				});
-    			});
-    		}
-    		else{
-    			Book.findOneAndUpdate({'_id':req.body.id},{$pull: {tradeRequests: req.user.local.username}},{new:true}, function(err,data){
-    				if(err) throw err;
-    				console.log("tradeRequests: "+data.tradeRequests);
-    				Book.find({}, function(err,data){
-    					if(err) throw err;
-    					console.log(JSON.stringify(data));
-    					res.send(data);
-    				});
-    			});
-    		}
-    	});
-    	
-    });
     
     app.post('/data', function(req,res){
     	User.find({},function(err,data){
@@ -562,31 +352,6 @@ module.exports = function (app, passport, googleBooks) {
 			res.end();
 		});
 		
-	app.route('/logstatus')
-		.get(function (req, res){
-			console.log("LOG STATUS: "+req.user);
-			if(Boolean(req.user)==false){
-				res.send('false');
-			}
-			else{
-				User.find({'local.username':req.user.local.username}, function(err, data){
-					if(err) throw err;
-					var userData = {
-					email: req.user.local.email,
-					city: req.user.local.city,
-					state: req.user.local.state,
-					fullName: req.user.local.fullName,
-					about: req.user.local.about,
-					username: req.user.local.username,
-					tradeRequestsForYou: req.user.local.tradeRequestsForYou,
-					tradeRequests: req.user.local.tradeRequests,
-					myBooks: req.user.local.myBooks
-					};
-					console.log("FOUND DATA FOR LOGIN: "+JSON.stringify(userData));
-					res.send(userData);
-				});
-			}
-		});
 
 	app.route('/profile')
 		.get(isLoggedIn, function (req, res) {
@@ -598,11 +363,11 @@ module.exports = function (app, passport, googleBooks) {
 			res.json(req.user.github);
 		});
 
-	app.route('/auth/github')
-		.get(passport.authenticate('github'));
+	app.route('/auth/twitter')
+		.get(passport.authenticate('twitter'));
 
-	app.route('/auth/github/callback')
-		.get(passport.authenticate('github', {
+	app.route('/auth/twitter/callback')
+		.get(passport.authenticate('twitter', {
 			successRedirect: '/',
 			failureRedirect: '/login'
 		}));

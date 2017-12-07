@@ -28002,6 +28002,28 @@ var Welcome = function (_React$Component2) {
             history.push('/main');
         };
 
+        _this2.loginTwitter = function (history) {
+            fetch('/twitterlogin', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                credentials: 'include',
+                mode: 'no-cors'
+            }).then(function (data) {
+                return data.json();
+            }).then(function (j) {
+                console.log('pushing to homepage');
+                if (Object.keys(j).length === 0) {
+                    console.log('fail');
+                    _this2.setState({ loginFail: true });
+                } else {
+                    console.log(j);
+                    _this2.props.store.loginUser(j);
+                    console.log(_this2.props);
+                    history.push('/main');
+                }
+            });
+        };
+
         _this2.loginAccount = function (history) {
 
             fetch('/login', {
@@ -28017,7 +28039,7 @@ var Welcome = function (_React$Component2) {
                 console.log('pushing to homepage');
                 if (Object.keys(j).length === 0) {
                     console.log('fail');
-                    _this2.setState({ fail: true });
+                    _this2.setState({ loginFail: true });
                 } else {
                     console.log(j);
                     _this2.props.store.loginUser(j);
@@ -28042,7 +28064,7 @@ var Welcome = function (_React$Component2) {
             }).then(function (j) {
                 if (Object.keys(j).length === 0) {
                     console.log('fail');
-                    _this2.setState({ fail: true });
+                    _this2.setState({ signupFail: true });
                 } else {
                     console.log('pushing to homepage');
                     console.log(j);
@@ -28097,13 +28119,19 @@ var Welcome = function (_React$Component2) {
             }
         };
 
+        _this2.unauthenticatedbrowse = function (history) {
+            history.push('/main');
+        };
+
         _this2.state = {
             usernameInput: '',
             passwordInput: '',
             loginForm: true,
             usernameSignupInput: '',
             passwordSignupInput: '',
-            emailSignupInput: ''
+            emailSignupInput: '',
+            loginFail: false,
+            signupFail: false
         };
         return _this2;
     }
@@ -28128,7 +28156,7 @@ var Welcome = function (_React$Component2) {
             };
             var inputStyle = {
                 padding: '0px 0px 0px 10px',
-                margin: "25px 0 0 0",
+                margin: "0px 0 0 0",
                 width: '70%',
                 height: 35,
                 border: '1px solid gray',
@@ -28152,7 +28180,7 @@ var Welcome = function (_React$Component2) {
                 marginTop: 5
             };
             var loginButtonDiv = {
-                height: 75,
+                height: 50,
                 width: '100%',
                 textAlign: 'left'
             };
@@ -28160,7 +28188,7 @@ var Welcome = function (_React$Component2) {
                 display: 'inline-block',
                 height: 40,
                 backgroundColor: '#56FF5B',
-                margin: '25px 5px 0px 40px',
+                margin: '0px 5px 0px 40px',
                 padding: '5px 10px 5px 10px',
                 fontSize: 18,
                 fontFamily: 'Tahoma',
@@ -28174,7 +28202,7 @@ var Welcome = function (_React$Component2) {
                 display: 'inline-block',
                 height: 40,
                 backgroundColor: '#56D0FF',
-                margin: '25px 5px 0px 10px',
+                margin: '0px 5px 0px 10px',
                 padding: '5px 10px 5px 10px',
                 fontSize: 18,
                 fontFamily: 'Tahoma',
@@ -28199,7 +28227,11 @@ var Welcome = function (_React$Component2) {
                 color: '#56D0FF',
                 fontSize: 18,
                 fontWeight: 900,
-                fontFamily: 'Arial Black'
+                fontFamily: 'Arial Black',
+                border: 'none',
+                padding: '0 0 0 0',
+                margin: '0 0 0 5px',
+                backgroundColor: 'white'
             };
             var guestDivStyle = {
                 textAlign: 'left'
@@ -28263,6 +28295,18 @@ var Welcome = function (_React$Component2) {
                 margin: 0,
                 padding: '5px 0px 0px 0px'
             };
+            var errorTextStyle = {
+                display: 'inline-block',
+                fontSize: 15,
+                color: 'red',
+                margin: 0,
+                padding: '3px 0 0 0'
+            };
+            var errorDivStyle = {
+                width: '100%',
+                textAlign: 'center',
+                height: 25
+            };
             if (this.state.loginForm) {
                 return _react2.default.createElement(
                     "div",
@@ -28292,6 +28336,7 @@ var Welcome = function (_React$Component2) {
                     _react2.default.createElement(
                         "div",
                         null,
+                        _react2.default.createElement("div", { style: errorDivStyle }),
                         _react2.default.createElement(
                             "div",
                             { style: iconDivStyle },
@@ -28304,10 +28349,20 @@ var Welcome = function (_React$Component2) {
                         null,
                         _react2.default.createElement(
                             "div",
+                            { style: errorDivStyle },
+                            this.state.loginFail == true && _react2.default.createElement(
+                                "p",
+                                { style: errorTextStyle },
+                                "Username/password combination invalid"
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
                             { style: iconDivStyle },
                             _react2.default.createElement("img", { style: iconStyle, src: "/output/iconmonstr-lock-3-48.png" })
                         ),
-                        _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Password", value: this.state.passwordInput, onChange: this.handlePasswordChange })
+                        _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Password", value: this.state.passwordInput, onChange: this.handlePasswordChange }),
+                        _react2.default.createElement("div", { style: errorDivStyle })
                     ),
                     _react2.default.createElement(
                         "div",
@@ -28322,11 +28377,16 @@ var Welcome = function (_React$Component2) {
                                     "Login"
                                 );
                             } }),
-                        _react2.default.createElement(
-                            "button",
-                            { style: twitterButtonStyle },
-                            "Login with Twitter"
-                        )
+                        _react2.default.createElement(_reactRouterDom.Route, { render: function render(_ref2) {
+                                var history = _ref2.history;
+                                return _react2.default.createElement(
+                                    "button",
+                                    { style: twitterButtonStyle, onClick: function onClick() {
+                                            _this3.loginTwitter(history);
+                                        } },
+                                    "Login with Twitter"
+                                );
+                            } })
                     ),
                     _react2.default.createElement(
                         "div",
@@ -28335,13 +28395,18 @@ var Welcome = function (_React$Component2) {
                         _react2.default.createElement(
                             "p",
                             { style: guestpStyle },
-                            "Or browse images as a ",
-                            _react2.default.createElement(
-                                "span",
-                                { style: guestStyle },
-                                "Guest"
-                            )
-                        )
+                            "Or browse images as a "
+                        ),
+                        _react2.default.createElement(_reactRouterDom.Route, { render: function render(_ref3) {
+                                var history = _ref3.history;
+                                return _react2.default.createElement(
+                                    "button",
+                                    { style: guestStyle, onClick: function onClick() {
+                                            _this3.unauthenticatedbrowse(history);
+                                        } },
+                                    "Guest"
+                                );
+                            } })
                     )
                 );
             } else {
@@ -28373,6 +28438,7 @@ var Welcome = function (_React$Component2) {
                     _react2.default.createElement(
                         "div",
                         null,
+                        _react2.default.createElement("div", { style: errorDivStyle }),
                         _react2.default.createElement(
                             "div",
                             { style: iconDivStyle },
@@ -28385,6 +28451,15 @@ var Welcome = function (_React$Component2) {
                         null,
                         _react2.default.createElement(
                             "div",
+                            { style: errorDivStyle },
+                            this.state.signupFail == true && _react2.default.createElement(
+                                "p",
+                                { style: errorTextStyle },
+                                "Username already taken"
+                            )
+                        ),
+                        _react2.default.createElement(
+                            "div",
                             { style: iconDivStyle },
                             _react2.default.createElement("img", { style: iconStyle, src: "/output/iconmonstr-lock-3-48.png" })
                         ),
@@ -28393,6 +28468,7 @@ var Welcome = function (_React$Component2) {
                     _react2.default.createElement(
                         "div",
                         null,
+                        _react2.default.createElement("div", { style: errorDivStyle }),
                         _react2.default.createElement(
                             "div",
                             { style: iconDivStyle },
@@ -28400,11 +28476,12 @@ var Welcome = function (_React$Component2) {
                         ),
                         _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Email", value: this.state.emailSignupInput, onChange: this.handleEmailSignupChange })
                     ),
+                    _react2.default.createElement("div", { style: errorDivStyle }),
                     _react2.default.createElement(
                         "div",
                         { style: loginButtonDiv },
-                        _react2.default.createElement(_reactRouterDom.Route, { render: function render(_ref2) {
-                                var history = _ref2.history;
+                        _react2.default.createElement(_reactRouterDom.Route, { render: function render(_ref4) {
+                                var history = _ref4.history;
                                 return _react2.default.createElement(
                                     "button",
                                     { style: loginButtonStyle, onClick: function onClick() {
@@ -29098,6 +29175,14 @@ var ImageBoard = function (_React$Component7) {
 
         var _this10 = _possibleConstructorReturn(this, (ImageBoard.__proto__ || Object.getPrototypeOf(ImageBoard)).call(this, props));
 
+        _this10.closeImageWindow = function () {
+            _this10.setState({ showImageWindow: null });
+        };
+
+        _this10.openImageWindow = function (url) {
+            _this10.setState({ showImageWindow: url });
+        };
+
         _this10.searchSubmitHandler = function (term) {
             _this10.setState({ searchSubmit: term });
         };
@@ -29144,7 +29229,8 @@ var ImageBoard = function (_React$Component7) {
         _this10.state = {
             addimage: false,
             imagesArray: [],
-            searchSubmit: ''
+            searchSubmit: '',
+            showImageWindow: null
         };
         fetch('/getimages', {
             method: 'GET',
@@ -29174,7 +29260,7 @@ var ImageBoard = function (_React$Component7) {
                 }
             }
             var images = searchArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image, pinImageHandler: _this11.pinImageHandler, changeWindowState: _this11.props.changeWindowState });
+                return _react2.default.createElement(Image, { key: index, store: _this11.props.store, image: image, pinImageHandler: _this11.pinImageHandler, openImageWindow: _this11.openImageWindow, changeWindowState: _this11.props.changeWindowState });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29207,7 +29293,8 @@ var ImageBoard = function (_React$Component7) {
                         },
                         display
                     ),
-                    _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+                    _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler }),
+                    _react2.default.createElement(ImageWindow, { showImageWindow: this.state.showImageWindow, closeWindow: this.closeImageWindow })
                 )
             );
         }
@@ -29223,6 +29310,14 @@ var UserImageBoard = function (_React$Component8) {
         _classCallCheck(this, UserImageBoard);
 
         var _this12 = _possibleConstructorReturn(this, (UserImageBoard.__proto__ || Object.getPrototypeOf(UserImageBoard)).call(this, props));
+
+        _this12.closeImageWindow = function () {
+            _this12.setState({ showImageWindow: null });
+        };
+
+        _this12.openImageWindow = function (url) {
+            _this12.setState({ showImageWindow: url });
+        };
 
         _this12.searchSubmitHandler = function (term) {
             _this12.setState({ searchSubmit: term });
@@ -29269,7 +29364,8 @@ var UserImageBoard = function (_React$Component8) {
         _this12.state = {
             addimage: false,
             imagesArray: [],
-            searchSubmit: ''
+            searchSubmit: '',
+            showImageWindow: null
         };
         fetch('/getuserimages', {
             method: 'POST',
@@ -29301,7 +29397,7 @@ var UserImageBoard = function (_React$Component8) {
                 }
             }
             var images = searchArray.map(function (image, index) {
-                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image, pinImageHandler: _this13.pinImageHandler, changeWindowState: _this13.props.changeWindowState });
+                return _react2.default.createElement(Image, { key: index, store: _this13.props.store, image: image, pinImageHandler: _this13.pinImageHandler, openImageWindow: _this13.openImageWindow, changeWindowState: _this13.props.changeWindowState });
             });
             var display = _react2.default.createElement(
                 "div",
@@ -29334,7 +29430,8 @@ var UserImageBoard = function (_React$Component8) {
                         },
                         display
                     ),
-                    _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler })
+                    _react2.default.createElement(AddImage, { visible: this.state.addimage, addImageHandler: this.addImageHandler, addImageDataHandler: this.addImageDataHandler }),
+                    _react2.default.createElement(ImageWindow, { showImageWindow: this.state.showImageWindow, closeWindow: this.closeImageWindow })
                 )
             );
         }
@@ -29667,6 +29764,13 @@ var Image = function (_React$Component10) {
                 float: 'right',
                 marginRight: 10
             };
+            var imageButtonStyle = {
+                border: 'none',
+                margin: 0,
+                padding: 0,
+                display: 'inline-block'
+
+            };
             var button = null;
             if (this.props.store.user.authenticated == false) {
                 button = _react2.default.createElement(
@@ -29697,9 +29801,15 @@ var Image = function (_React$Component10) {
                 _react2.default.createElement(
                     "div",
                     { style: thumbnailStyle },
-                    _react2.default.createElement("img", { src: this.props.image.url, onError: function onError(event) {
-                            return event.target.setAttribute("src", "/output/errorimage.png");
-                        }, style: imgStyle })
+                    _react2.default.createElement(
+                        "button",
+                        { style: imageButtonStyle, onClick: function onClick() {
+                                _this16.props.openImageWindow(_this16.props.image.url);
+                            } },
+                        _react2.default.createElement("img", { src: this.props.image.url, onError: function onError(event) {
+                                return event.target.setAttribute("src", "/output/errorimage.png");
+                            }, style: imgStyle })
+                    )
                 ),
                 _react2.default.createElement(
                     "div",
@@ -29865,7 +29975,9 @@ var UserBoardInfoMenu = function (_React$Component12) {
                     _react2.default.createElement(
                         "h1",
                         { style: h1Style },
-                        "Browsing All Images"
+                        "Browsing ",
+                        this.props.user,
+                        "'s Images"
                     )
                 );
             } else if (this.props.store.user.username == this.props.user) {
@@ -29900,6 +30012,116 @@ var UserBoardInfoMenu = function (_React$Component12) {
     }]);
 
     return UserBoardInfoMenu;
+}(_react2.default.Component);
+
+var ImageWindow = function (_React$Component13) {
+    _inherits(ImageWindow, _React$Component13);
+
+    function ImageWindow(props) {
+        _classCallCheck(this, ImageWindow);
+
+        return _possibleConstructorReturn(this, (ImageWindow.__proto__ || Object.getPrototypeOf(ImageWindow)).call(this, props));
+    }
+
+    _createClass(ImageWindow, [{
+        key: "render",
+        value: function render() {
+            var _imgStyle;
+
+            if (this.props.showImageWindow == null) {
+                return null;
+            }
+
+            var backdropStyle = {
+                position: 'fixed',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: 'rgba(0,0,0,0.3)',
+                padding: 50,
+                zIndex: 10
+            };
+
+            var modalStyle = _defineProperty({
+                backgroundColor: 'black',
+                borderRadius: 5,
+                width: 650,
+                height: 540,
+                margin: 0,
+                position: 'fixed',
+                top: '45%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'left',
+                zIndex: 100
+            }, "borderRadius", 5);
+
+            var contentStyle = {
+                display: 'inline-block',
+                height: 490,
+                width: 295,
+                paddingTop: 10,
+                paddingLeft: 15,
+                paddingRight: 15,
+                margin: 0,
+                overflowY: 'auto'
+            };
+            var titleStyle = {
+                display: 'inline-block',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                margin: '5px 0 0 15px',
+                padding: '0 0 0 0',
+                fontFamily: 'Arial Black',
+                fontWeight: 900
+            };
+            var subtextStyle = {
+                color: '#BDBDBD',
+                margin: 0,
+                padding: '0 0 10px 0',
+                fontFamily: "Bookman"
+            };
+            var synopsisStyle = {
+                color: '#D8D8D8',
+                margin: 0,
+                padding: 0
+            };
+            var subtitleStyle = {
+                color: '#A5A5A5',
+                fontWeight: 700,
+                padding: 0,
+                margin: 0
+            };
+            var modalHeaderStyle = {
+                display: 'inline-block',
+                backgroundColor: '#DFDFDF',
+                height: 40,
+                minWidth: 650
+            };
+            var imgStyle = (_imgStyle = {
+                width: '100%',
+                minHeight: 150,
+                maxHeight: 800,
+                flex: 1,
+                display: 'inline-block'
+            }, _defineProperty(_imgStyle, "flex", 1), _defineProperty(_imgStyle, "position", 'relative'), _defineProperty(_imgStyle, "top", '50%'), _defineProperty(_imgStyle, "transform", 'translateY(-50%)'), _imgStyle);
+
+            return _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement("div", { className: "backdrop", style: backdropStyle, onClick: this.props.closeWindow }),
+                _react2.default.createElement(
+                    "div",
+                    { className: "modal", style: modalStyle },
+                    _react2.default.createElement("img", { style: imgStyle, src: this.props.showImageWindow })
+                )
+            );
+        }
+    }]);
+
+    return ImageWindow;
 }(_react2.default.Component);
 
 exports.default = Main;

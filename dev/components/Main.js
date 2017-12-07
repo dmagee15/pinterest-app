@@ -319,7 +319,8 @@ class ImageBoard extends React.Component{
     this.state = {
             addimage: false,
             imagesArray: [],
-            searchSubmit: ''
+            searchSubmit: '',
+            showImageWindow: null
         }
         fetch('/getimages', {
         method: 'GET',
@@ -333,6 +334,12 @@ class ImageBoard extends React.Component{
             this.setState({imagesArray});
 
         });
+    }
+    closeImageWindow = () => {
+        this.setState({showImageWindow: null});
+    }
+    openImageWindow = (url) => {
+        this.setState({showImageWindow: url});
     }
     searchSubmitHandler = (term) => {
         this.setState({searchSubmit: term});
@@ -385,7 +392,7 @@ class ImageBoard extends React.Component{
                 }
             }
             var images = searchArray.map((image, index) => 
-		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler} changeWindowState={this.props.changeWindowState}/>
+		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler} openImageWindow={this.openImageWindow} changeWindowState={this.props.changeWindowState}/>
 		    );
 		    var display = 
 		        <div>
@@ -413,6 +420,7 @@ class ImageBoard extends React.Component{
                     {display}
                 </Masonry>
                 <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
+                <ImageWindow showImageWindow={this.state.showImageWindow} closeWindow={this.closeImageWindow}/>
                </div>
                </div>
           ); 
@@ -426,7 +434,8 @@ class UserImageBoard extends React.Component{
     this.state = {
             addimage: false,
             imagesArray: [],
-            searchSubmit: ''
+            searchSubmit: '',
+            showImageWindow: null
         }
         fetch('/getuserimages', {
         method: 'POST',
@@ -442,6 +451,12 @@ class UserImageBoard extends React.Component{
             this.setState({imagesArray});
 
         });
+    }
+    closeImageWindow = () => {
+        this.setState({showImageWindow: null});
+    }
+    openImageWindow = (url) => {
+        this.setState({showImageWindow: url});
     }
     searchSubmitHandler = (term) => {
         this.setState({searchSubmit: term});
@@ -493,7 +508,7 @@ class UserImageBoard extends React.Component{
                 }
             }
             var images = searchArray.map((image, index) => 
-		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler} changeWindowState={this.props.changeWindowState}/>
+		   <Image key={index} store={this.props.store} image={image} pinImageHandler={this.pinImageHandler} openImageWindow={this.openImageWindow} changeWindowState={this.props.changeWindowState}/>
 		    );
 		    var display = 
 		        <div>
@@ -521,7 +536,9 @@ class UserImageBoard extends React.Component{
                     {display}
                 </Masonry>
                 <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
+                <ImageWindow showImageWindow={this.state.showImageWindow} closeWindow={this.closeImageWindow}/>
                </div>
+               
                </div>
           ); 
 					
@@ -820,6 +837,13 @@ class Image extends React.Component{
             float:'right',
             marginRight: 10
         };
+        var imageButtonStyle = {
+            border: 'none',
+            margin: 0,
+            padding: 0,
+            display: 'inline-block',
+            
+        }
         var button = null;
         if(this.props.store.user.authenticated==false){
             button = <div style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></div>;
@@ -833,7 +857,9 @@ class Image extends React.Component{
             return (
                 <div style={divStyle} className="grid-item">
                 <div style={thumbnailStyle}>
+                    <button style={imageButtonStyle} onClick={()=>{this.props.openImageWindow(this.props.image.url)}}>
                     <img src={this.props.image.url} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} style={imgStyle} />
+                    </button>
                 </div>
                 <div style={divContentStyle}>
                     <div style={titleContainerStyle}>
@@ -949,7 +975,7 @@ class UserBoardInfoMenu extends React.Component{
         if(this.props.store.user.username==''){
             return (
                 <div style={divStyle} className="grid-item">
-                    <h1 style={h1Style}>Browsing All Images</h1>
+                    <h1 style={h1Style}>Browsing {this.props.user}'s Images</h1>
                 </div>
                 );
         }
@@ -969,6 +995,113 @@ class UserBoardInfoMenu extends React.Component{
                 );
         }
         
+    }
+}
+
+class ImageWindow extends React.Component{
+    constructor(props) {
+    super(props);
+    }
+    
+    render(){
+    
+    if(this.props.showImageWindow == null){
+        return null;
+    }
+    
+    const backdropStyle = {
+      position: 'fixed',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      padding: 50,
+      zIndex: 10
+    };
+
+    const modalStyle = {
+      backgroundColor: 'black',
+      borderRadius: 5,
+      width: 650,
+      height: 540,
+      margin: 0,
+      position: 'fixed',
+      top: '45%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      textAlign: 'left',
+      zIndex: 100,
+      borderRadius: 5
+    };
+    
+    var contentStyle = {
+        display:'inline-block',
+        height:490,
+        width: 295,
+        paddingTop: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
+        margin: 0,
+        overflowY: 'auto'
+    };
+        var titleStyle = {
+            display: 'inline-block',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            margin: '5px 0 0 15px',
+            padding: '0 0 0 0',
+            fontFamily: 'Arial Black',
+            fontWeight: 900
+        };
+        var subtextStyle = {
+            color: '#BDBDBD',
+            margin: 0,
+            padding: '0 0 10px 0',
+            fontFamily: "Bookman"
+        };
+        var synopsisStyle = {
+            color: '#D8D8D8',
+            margin: 0,
+            padding: 0
+        }
+        var subtitleStyle = {
+            color: '#A5A5A5',
+            fontWeight: 700,
+            padding: 0,
+            margin: 0
+        }
+        var modalHeaderStyle = {
+            display: 'inline-block',
+            backgroundColor: '#DFDFDF',
+            height: 40,
+            minWidth: 650
+        }
+        var imgStyle = {
+            width: '100%',
+            minHeight: 150,
+            maxHeight: 800,
+            flex: 1,
+            display:'inline-block',
+            flex: 1,
+            position: 'relative',
+            top: '50%',
+            transform: 'translateY(-50%)'
+        }
+        
+        return (
+            <div>
+            <div className="backdrop" style={backdropStyle} onClick={this.props.closeWindow}>
+                
+            </div>
+            
+            <div className="modal" style={modalStyle}>
+                   <img style={imgStyle} src={this.props.showImageWindow}/>
+            </div>
+            
+            </div>
+            );
     }
 }
 
