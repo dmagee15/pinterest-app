@@ -50,12 +50,30 @@ module.exports = function (app, passport, googleBooks) {
 			res.send(userData);
 		});
 	});
-	
-	app.post('/twitterlogin', passport.authenticate('twitter', { failureRedirect: '/loginfail', failureFlash: false }), function(req,res){
+	app.get('/loginstatus', function(req,res){
+		console.log("LOGIN STATUS");
 		console.log(req.user);
-		res.end();
+		console.log("undefined: "+(req.user==undefined));
+		if(req.user==undefined){
+			res.send({});
+		}
+		else{
+			res.send(req.user);
+		}
 	});
-	
+	app.get('/twitterlogin', passport.authenticate('twitter', { failureRedirect: '/loginfail', failureFlash: false }), function(req,res){
+		console.log(req.user);
+		res.send(req.user);
+	});
+	app.get('/auth/twitter',
+	passport.authenticate('twitter'));
+
+	app.get('/auth/twitter/callback', 
+	passport.authenticate('twitter', { failureRedirect: '/login' }),
+	function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+	});
 	app.get('/loginfail', function(req,res){
 		res.send({});
 	});
@@ -183,113 +201,6 @@ module.exports = function (app, passport, googleBooks) {
 				}
 			})
 			
-    	
-    });
-    
-    app.post('/removebook', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.id);
-    	
-    	Book.find({'_id':req.body.id}).remove().exec(function(err, data){
-    		if(err) throw err;
-    		Book.find({'username':req.user.local.username}, function(err,data){
-    		if(err) throw err;
-    		console.log("username: "+req.user.local.username);
-    		console.log(JSON.stringify(data));
-    		res.send(data);
-    		});
-    	});
-    	
-    });
-    
-    app.post('/removerequest', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.id);
-    	
-    	Book.findOneAndUpdate({'_id':req.body.id},{$pull: {tradeRequests: req.user.local.username}},{new:true}, function(err,data){
-    		if(err) throw err;
-    		console.log("username: "+req.user.local.username);
-    		console.log(JSON.stringify(data));
-    		if(data.tradeConfirmUser==req.user.local.username){
-    			Book.findOneAndUpdate({'_id':req.body.id},{tradeConfirmUser: '', tradeConfirmDate: ''},{new:true}, function(err,data){
-    			if(err) throw err;
-    				Book.find({tradeRequests: req.user.local.username }, function(err,data){
-    				if(err) throw err;
-    				console.log("GET YOUR TRADE REQUESTS");
-    				console.log(JSON.stringify(data));
-    				res.send(data);
-    				});
-    			});
-    		}
-    		else{
-    			Book.find({tradeRequests: req.user.local.username }, function(err,data){
-    			if(err) throw err;
-    			console.log("GET YOUR TRADE REQUESTS");
-    			console.log(JSON.stringify(data));
-    			res.send(data);
-    		});
-    
-    		}
-    	});
-    	
-    });
-    
-    app.post('/removerequestforyou', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.id);
-    	User.find({'local.username':req.body.tradeRequestUser},function(err,userdata){
-    		if(err) throw err;
-    		Book.findOneAndUpdate({'_id':req.body.id},{$pull: {tradeRequests: req.body.tradeRequestUser, tradeRequestsCities: userdata[0].local.city, tradeRequestsStates: userdata[0].local.state}},{new:true}, function(err,data){
-    		if(err) throw err;
-    		
-    		User.find({}, function(err,users){
-				console.log("USERS");
-				console.log(users);
-    	Book.find({username: req.user.local.username, $where : "this.tradeRequests.length != 0"}, function(err,data){
-    		if(err) throw err;
-
-    		var result = [];
-    		var length=data.length;
-    		var usernameArray = [];
-    		for(var z=0;z<users.length;z++){
-    			usernameArray.push(users[z].local.username);
-    		}
-    		for(var x=0;x<length;x++){
-    			var requestLength = data[x].tradeRequests.length;
-    			for(var y=0;y<requestLength;y++){
-						
-    					var request = {
-    					"_id": data[x]._id,
-    					"tradeConfirmDate": data[x].tradeConfirmDate,
-    					"tradeConfirmUser": data[x].tradeConfirmUser,
-    					"tradeConfirmCity": data[x].tradeConfirmCity,
-    					"tradeConfirmState": data[x].tradeConfirmState,
-    					"tradeConfirmEmail": data[x].tradeConfirmEmail,
-    					"email": data[x].email,
-    					"username": data[x].username,
-    					"city": data[x].city,
-    					"state": data[x].state,
-    					"fullName": data[x].fullName,
-    					"description": data[x].description,
-    					"pageCount": data[x].pageCount,
-    					"publishedDate": data[x].publishedDate,
-    					"author": data[x].author,
-    					"thumbnail": data[x].thumbnail,
-    					"title": data[x].title,
-    					"tradeRequestUser": data[x].tradeRequests[y],
-    					"tradeRequestCity": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.city,
-    					"tradeRequestState": users[usernameArray.indexOf(data[x].tradeRequests[y])].local.state
-    				}
-    				result.push(request);
-
-    			}
-    		}
-    		res.send(result);
-    	});
-		});
-    	});
-    	});
-    	
     	
     });
     

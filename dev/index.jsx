@@ -83,8 +83,8 @@ class App extends React.Component{
            <div>
             <Router>
             <div>
-                <Route exact path='/' render={(props) => (
-                    <Home store={this.props}/>
+                <Route exact path='/' render={({ history},props) => (
+                    <Home store={this.props} history={history}/>
                 )} />
                 <Route exact path='/main' render={(props) => (
                     <Main store={this.props}/>

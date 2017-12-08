@@ -5915,8 +5915,9 @@ var App = function (_React$Component) {
                     _react2.default.createElement(
                         "div",
                         null,
-                        _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/", render: function render(props) {
-                                return _react2.default.createElement(_Home2.default, { store: _this2.props });
+                        _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/", render: function render(_ref, props) {
+                                var history = _ref.history;
+                                return _react2.default.createElement(_Home2.default, { store: _this2.props, history: history });
                             } }),
                         _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/main", render: function render(props) {
                                 return _react2.default.createElement(_Main2.default, { store: _this2.props });
@@ -5941,8 +5942,8 @@ var App = function (_React$Component) {
 
 var Container = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
 
-var AppWrapper = function AppWrapper(_ref) {
-    var store = _ref.store;
+var AppWrapper = function AppWrapper(_ref2) {
+    var store = _ref2.store;
     return _react2.default.createElement(
         _reactRedux.Provider,
         { store: store },
@@ -27947,7 +27948,26 @@ var Home = function (_React$Component) {
     function Home(props) {
         _classCallCheck(this, Home);
 
-        return _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
+
+        fetch('loginstatus', {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include'
+        }).then(function (data) {
+            return data.json();
+        }).then(function (j) {
+            console.log('pushing to homepage');
+            if (Object.keys(j).length === 0) {
+                console.log('fail initial login test');
+            } else {
+                console.log(j);
+                _this.props.store.loginUser(j.local);
+                console.log(_this.props);
+                _this.props.history.push('/main');
+            }
+        });
+        return _this;
     }
 
     _createClass(Home, [{
@@ -28003,11 +28023,10 @@ var Welcome = function (_React$Component2) {
         };
 
         _this2.loginTwitter = function (history) {
-            fetch('/twitterlogin', {
-                method: 'POST',
+            fetch('/auth/twitter', {
+                method: 'GET',
                 headers: { "Content-Type": "application/json" },
-                credentials: 'include',
-                mode: 'no-cors'
+                credentials: 'include'
             }).then(function (data) {
                 return data.json();
             }).then(function (j) {
@@ -28203,14 +28222,16 @@ var Welcome = function (_React$Component2) {
                 height: 40,
                 backgroundColor: '#56D0FF',
                 margin: '0px 5px 0px 10px',
-                padding: '5px 10px 5px 10px',
+                padding: '0px 5px 0px 5px',
                 fontSize: 18,
                 fontFamily: 'Tahoma',
                 border: 'none',
                 borderRadius: 5,
                 boxShadow: 'none',
                 fontWeight: 900,
-                color: 'white'
+                color: 'white',
+                verticalAlign: 'top',
+                textAlign: 'center'
             };
             var hrStyle = {
                 width: '85%',
@@ -28307,6 +28328,11 @@ var Welcome = function (_React$Component2) {
                 textAlign: 'center',
                 height: 25
             };
+            var twitterButtonPStyle = {
+                display: 'inline-block',
+                margin: 0,
+                padding: '10px 0 0 0'
+            };
             if (this.state.loginForm) {
                 return _react2.default.createElement(
                     "div",
@@ -28380,11 +28406,17 @@ var Welcome = function (_React$Component2) {
                         _react2.default.createElement(_reactRouterDom.Route, { render: function render(_ref2) {
                                 var history = _ref2.history;
                                 return _react2.default.createElement(
-                                    "button",
-                                    { style: twitterButtonStyle, onClick: function onClick() {
-                                            _this3.loginTwitter(history);
-                                        } },
-                                    "Login with Twitter"
+                                    "a",
+                                    { href: "/twitterlogin" },
+                                    _react2.default.createElement(
+                                        "div",
+                                        { style: twitterButtonStyle },
+                                        _react2.default.createElement(
+                                            "p",
+                                            { style: twitterButtonPStyle },
+                                            "Login with Twitter"
+                                        )
+                                    )
                                 );
                             } })
                     ),

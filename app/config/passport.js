@@ -16,44 +16,60 @@ module.exports = function (passport) {
 		});
 	});
     passport.use('twitter', new TwitterStrategy({
-    consumerKey: configAuth.twitterAuth.clientID,
-    consumerSecret: configAuth.twitterAuth.clientSecret,
-    callbackURL: configAuth.twitterAuth.callbackURL
+
+        consumerKey     : configAuth.twitterAuth.clientID,
+        consumerSecret  : configAuth.twitterAuth.clientSecret,
+        callbackURL     : configAuth.twitterAuth.callbackURL
+
     },
-    function(token, tokenSecret, profile, cb) {
-        console.log("TWITTER PROFILE");
-        console.log(profile);
-    User.findOrCreate({ twitterId: profile.id }, function (err, user) {
-        process.nextTick(function () {
-			User.findOne({ 'local.username': profile.id }, function (err, user) {
-				if (err) {
-					return cb(err);
-				}
+    function(token, tokenSecret, profile, done) {
 
-				if (user) {
-					return cb(null, user);
-				} else {
-/*					var newUser = new User();
-					newUser.github.id = profile.id;
-					newUser.github.username = profile.username;
-					newUser.github.displayName = profile.displayName;
-					newUser.github.publicRepos = profile._json.public_repos;
-					newUser.nbrClicks.clicks = 0;
+        // make the code asynchronous
+    // User.findOne won't fire until we have all our data back from Twitter
+        process.nextTick(function() {
+            console.log("TWITTER PROFILE");
+            console.log(profile);
+            User.findOne({ 'twitter.id' : profile.id }, function(err, user) {
 
-					newUser.save(function (err) {
-						if (err) {
-							throw err;
-						}
+                // if there is an error, stop everything and return that
+                // ie an error connecting to the database
+                if (err)
+                    return done(err);
 
-						return cb(null, newUser);
-					}); */
-					return cb(null,profile);
-				}
-			});
-		});
-        });
-        }
-    ));
+                // if the user is found then log them in
+                if (user) {
+                    return done(null, user); // user found, return that user
+                } else {
+                    // if there is no user, create them
+                    var newUser = new User();
+                    newUser.local.username = "(t)"+profile.username;
+                    newUser.local.password = '';
+                    newUser.local.email = '';
+                    newUser.save(function(err) {
+                        if (err)
+                            throw err;
+                        return done(null, newUser);
+                    });
+                    /*var newUser                 = new User();
+
+                    // set all of the user data that we need
+                    newUser.twitter.id          = profile.id;
+                    newUser.twitter.token       = token;
+                    newUser.twitter.username    = profile.username;
+                    newUser.twitter.displayName = profile.displayName;
+
+                    // save our user into the database
+                    newUser.save(function(err) {
+                        if (err)
+                            throw err;
+                        return done(null, newUser);
+                    });*/
+                }
+            });
+
+    });
+
+    }));
     
 	passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
@@ -66,10 +82,12 @@ module.exports = function (passport) {
         // asynchronous
         // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
-
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        User.findOne({ 'local.username' :  username }, function(err, user) {
+        var regex = /\(t\)/;
+        if(regex.test(username)||password==''){
+            return done(null, false, { message: 'That username is already taken.' });
+        }
+        else{
+            User.findOne({ 'local.username' :  username }, function(err, user) {
             // if there are any errors, return the error
             if (err)
                 return done(err);
@@ -101,7 +119,10 @@ module.exports = function (passport) {
                 });
             }
 
-        });    
+        });   
+        }
+        // find a user whose email is the same as the forms email
+        // we are checking to see if the user trying to login already exists
 
         });
 
@@ -114,10 +135,12 @@ module.exports = function (passport) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) { // callback with email and password from our form
-
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        User.findOne({ 'local.username' :  username }, function(err, user) {
+        var regex = /\(t\)/;
+        if(regex.test(username)||password==''){
+            return done(null, false, { message: 'That username is already taken.' });
+        }
+        else{
+            User.findOne({ 'local.username' :  username }, function(err, user) {
             // if there are any errors, return the error before anything else
             if (err)
                 return done(err);
@@ -133,6 +156,9 @@ module.exports = function (passport) {
             // all is well, return successful user
             return done(null, user);
         });
+        }
+        // find a user whose email is the same as the forms email
+        // we are checking to see if the user trying to login already exists
 
     }));
 };

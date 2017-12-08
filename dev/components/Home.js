@@ -7,6 +7,25 @@ import Redux, {createStore, bindActionCreators} from 'redux';
 class Home extends React.Component{
     constructor(props) {
     super(props);
+    fetch('loginstatus', {
+        method: 'GET',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            console.log('pushing to homepage');
+            if(Object.keys(j).length === 0){
+                console.log('fail initial login test');
+            }
+            else{
+                console.log(j);
+                this.props.store.loginUser(j.local);
+                console.log(this.props);
+                this.props.history.push('/main');
+            }
+
+        });
     }
     
    render(){
@@ -63,11 +82,10 @@ class Welcome extends React.Component{
         history.push('/main');
     }
     loginTwitter = (history) => {
-        fetch('/twitterlogin', {
-        method: 'POST',
+        fetch('/auth/twitter', {
+        method: 'GET',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
-        mode: 'no-cors'
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
@@ -244,14 +262,16 @@ class Welcome extends React.Component{
         height: 40,
         backgroundColor: '#56D0FF',
         margin: '0px 5px 0px 10px',
-        padding: '5px 10px 5px 10px',
+        padding: '0px 5px 0px 5px',
         fontSize: 18,
 		fontFamily: 'Tahoma',
 		border:'none',
 		borderRadius: 5,
 		boxShadow:'none',
 		fontWeight: 900,
-		color: 'white'
+		color: 'white',
+		verticalAlign: 'top',
+		textAlign: 'center'
     };
     var hrStyle = {
         width: '85%',
@@ -348,6 +368,11 @@ class Welcome extends React.Component{
         textAlign: 'center',
         height: 25
     }
+    var twitterButtonPStyle = {
+        display: 'inline-block',
+        margin: 0,
+        padding: '10px 0 0 0'
+    }
     if(this.state.loginForm){
         return (
             <div className="modal" style={modalStyle}>
@@ -384,7 +409,7 @@ class Welcome extends React.Component{
                         <button style={loginButtonStyle} onClick={() => this.loginAccount(history)}>Login</button>
                     )}/>
                     <Route render={({ history}) => (
-                        <button style={twitterButtonStyle} onClick={()=>{this.loginTwitter(history)}}>Login with Twitter</button>
+                        <a href='/twitterlogin'><div style={twitterButtonStyle}><p style={twitterButtonPStyle}>Login with Twitter</p></div></a>
                     )}/>
                     </div>
                     <div style={guestDivStyle}>
