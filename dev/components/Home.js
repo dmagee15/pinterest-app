@@ -408,7 +408,7 @@ class Welcome extends React.Component{
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-lock-3-48.png" />
                         </div>
-                        <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordInput} onChange={this.handlePasswordChange}/>
+                        <input style={inputStyle} type="text" type="password" placeholder="Password" value={this.state.passwordInput} onChange={this.handlePasswordChange}/>
                         <div style={errorDivStyle}></div>
                     </div>
                     <div style={loginButtonDiv}>
@@ -458,7 +458,7 @@ class Welcome extends React.Component{
                         <div style={iconDivStyle}>
                             <img style={iconStyle} src="/output/iconmonstr-lock-3-48.png" />
                         </div>
-                        <input style={inputStyle} type="text" placeholder="Password" value={this.state.passwordSignupInput} onChange={this.handlePasswordSignupChange}/>
+                        <input style={inputStyle} type="text" type="password" placeholder="Password" value={this.state.passwordSignupInput} onChange={this.handlePasswordSignupChange}/>
                     </div>
                     <div>
                         <div style={errorDivStyle}></div>

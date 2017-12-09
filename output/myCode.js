@@ -27936,6 +27936,8 @@ var _redux2 = _interopRequireDefault(_redux);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -28341,6 +28343,8 @@ var Welcome = function (_React$Component2) {
                 padding: '10px 0 0 0'
             };
             if (this.state.loginForm) {
+                var _React$createElement;
+
                 return _react2.default.createElement(
                     "div",
                     { className: "modal", style: modalStyle },
@@ -28394,7 +28398,7 @@ var Welcome = function (_React$Component2) {
                             { style: iconDivStyle },
                             _react2.default.createElement("img", { style: iconStyle, src: "/output/iconmonstr-lock-3-48.png" })
                         ),
-                        _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Password", value: this.state.passwordInput, onChange: this.handlePasswordChange }),
+                        _react2.default.createElement("input", (_React$createElement = { style: inputStyle, type: "text" }, _defineProperty(_React$createElement, "type", "password"), _defineProperty(_React$createElement, "placeholder", "Password"), _defineProperty(_React$createElement, "value", this.state.passwordInput), _defineProperty(_React$createElement, "onChange", this.handlePasswordChange), _React$createElement)),
                         _react2.default.createElement("div", { style: errorDivStyle })
                     ),
                     _react2.default.createElement(
@@ -28449,6 +28453,8 @@ var Welcome = function (_React$Component2) {
                     )
                 );
             } else {
+                var _React$createElement2;
+
                 return _react2.default.createElement(
                     "div",
                     { className: "modal", style: modalStyle },
@@ -28502,7 +28508,7 @@ var Welcome = function (_React$Component2) {
                             { style: iconDivStyle },
                             _react2.default.createElement("img", { style: iconStyle, src: "/output/iconmonstr-lock-3-48.png" })
                         ),
-                        _react2.default.createElement("input", { style: inputStyle, type: "text", placeholder: "Password", value: this.state.passwordSignupInput, onChange: this.handlePasswordSignupChange })
+                        _react2.default.createElement("input", (_React$createElement2 = { style: inputStyle, type: "text" }, _defineProperty(_React$createElement2, "type", "password"), _defineProperty(_React$createElement2, "placeholder", "Password"), _defineProperty(_React$createElement2, "value", this.state.passwordSignupInput), _defineProperty(_React$createElement2, "onChange", this.handlePasswordSignupChange), _React$createElement2))
                     ),
                     _react2.default.createElement(
                         "div",
