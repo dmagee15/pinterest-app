@@ -42,9 +42,14 @@ class Header extends React.Component{
     }
     }
     handleSearchInputChange = (event) => {
-        this.setState({
+            this.setState({
             searchInput: event.target.value
-        });
+            });
+    }
+    handleSearchKeyPress = (event) => {
+        if(event.key=='Enter'){
+            this.submitSearch();
+        }
     }
     submitSearch = () => {
         console.log(this.state.searchInput);
@@ -109,8 +114,8 @@ class Header extends React.Component{
 
         return (
            <div id="header" style={divStyle}>
-            <HomeButton float='left' text='Home' store={this.props.store} changeWindowState={this.props.changeWindowState}/>
-            <input type="text" placeholder="Search Images..." onChange={this.handleSearchInputChange} value={this.state.searchInput} style={searchInputStyle}/>
+            <HomeButton float='left' text='Home' store={this.props.store} changeWindowState={this.props.changeWindowState} searchSubmitHandler={this.props.searchSubmitHandler}/>
+            <input type="text" placeholder="Search Images..." onChange={this.handleSearchInputChange} onKeyPress={this.handleSearchKeyPress} value={this.state.searchInput} style={searchInputStyle}/>
             <button style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-magnifier-6-48 (1).png" onClick={this.submitSearch}/></button>
             {(this.props.store.user.authenticated==true)?(
             <div style={{display:'inline-block', float:'right'}}>
@@ -258,7 +263,7 @@ class HomeButton extends React.Component{
 	        fontFamily: 'Arial Black'
 	    }
         return(
-            <button style={hoverButtonStyle} onClick={() => {this.props.changeWindowState('')}} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}>
+            <button style={hoverButtonStyle} onClick={() => {this.props.changeWindowState(''); this.props.searchSubmitHandler('');}} onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}>
             <p style={buttonTextStyle}>{this.props.text}</p>
             </button>
         );
@@ -385,7 +390,7 @@ class ImageBoard extends React.Component{
    render(){
             var searchArray = [];
             var length = this.state.imagesArray.length;
-            var regex = new RegExp(this.state.searchSubmit);
+            var regex = new RegExp(this.state.searchSubmit,'i');
             for(var x=0;x<length;x++){
                 if(regex.test(this.state.imagesArray[x].username)||regex.test(this.state.imagesArray[x].title)){
                     searchArray.push(this.state.imagesArray[x]);
@@ -501,7 +506,7 @@ class UserImageBoard extends React.Component{
    render(){
             var searchArray = [];
             var length = this.state.imagesArray.length;
-            var regex = new RegExp(this.state.searchSubmit);
+            var regex = new RegExp(this.state.searchSubmit,'i');
             for(var x=0;x<length;x++){
                 if(regex.test(this.state.imagesArray[x].username)||regex.test(this.state.imagesArray[x].title)){
                     searchArray.push(this.state.imagesArray[x]);
@@ -694,7 +699,8 @@ class AddImage extends React.Component{
             display:'inline-block',
             position: 'relative',
             top: '50%',
-            transform: 'translateY(-50%)'
+            transform: 'translateY(-50%)',
+            width: '100%'
         }
     var exitButtonStyle ={
         display:'inline-block',
@@ -1023,14 +1029,15 @@ class ImageWindow extends React.Component{
     const modalStyle = {
       backgroundColor: 'black',
       borderRadius: 5,
-      width: 650,
+      minWidth: 400,
+      maxWidth: 650,
       height: 540,
       margin: 0,
       position: 'fixed',
       top: '45%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      textAlign: 'left',
+      textAlign: 'center',
       zIndex: 100,
       borderRadius: 5
     };
@@ -1079,15 +1086,13 @@ class ImageWindow extends React.Component{
             minWidth: 650
         }
         var imgStyle = {
-            width: '100%',
-            minHeight: 150,
-            maxHeight: 800,
+            maxWidth: '100%',
+            maxHeight: '100%',
             flex: 1,
             display:'inline-block',
-            flex: 1,
             position: 'relative',
             top: '50%',
-            transform: 'translateY(-50%)'
+            transform: 'translateY(-50%)',
         }
         
         return (

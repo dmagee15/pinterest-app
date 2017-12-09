@@ -7,6 +7,9 @@ import Redux, {createStore, bindActionCreators} from 'redux';
 class Home extends React.Component{
     constructor(props) {
     super(props);
+    this.state = {
+        loginCheck: false
+    }
     fetch('loginstatus', {
         method: 'GET',
         headers: {"Content-Type": "application/json"},
@@ -17,6 +20,7 @@ class Home extends React.Component{
             console.log('pushing to homepage');
             if(Object.keys(j).length === 0){
                 console.log('fail initial login test');
+                this.setState({loginCheck:true});
             }
             else{
                 console.log(j);
@@ -29,6 +33,9 @@ class Home extends React.Component{
     }
     
    render(){
+       if(this.state.loginCheck==false){
+           return null;
+       }
         var blackBack = {
                 padding:0,
 				margin:0,
@@ -470,7 +477,7 @@ class Welcome extends React.Component{
 
             );
     }
-
+    
     }
    
 }

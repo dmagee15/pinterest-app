@@ -27950,6 +27950,9 @@ var Home = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
 
+        _this.state = {
+            loginCheck: false
+        };
         fetch('loginstatus', {
             method: 'GET',
             headers: { "Content-Type": "application/json" },
@@ -27960,6 +27963,7 @@ var Home = function (_React$Component) {
             console.log('pushing to homepage');
             if (Object.keys(j).length === 0) {
                 console.log('fail initial login test');
+                _this.setState({ loginCheck: true });
             } else {
                 console.log(j);
                 _this.props.store.loginUser(j.local);
@@ -27973,6 +27977,9 @@ var Home = function (_React$Component) {
     _createClass(Home, [{
         key: "render",
         value: function render() {
+            if (this.state.loginCheck == false) {
+                return null;
+            }
             var blackBack = {
                 padding: 0,
                 margin: 0,
@@ -28852,6 +28859,12 @@ var Header = function (_React$Component2) {
             });
         };
 
+        _this2.handleSearchKeyPress = function (event) {
+            if (event.key == 'Enter') {
+                _this2.submitSearch();
+            }
+        };
+
         _this2.submitSearch = function () {
             console.log(_this2.state.searchInput);
             _this2.setState({ submitTerm: _this2.state.searchInput, searchInput: '' }, function () {
@@ -28925,8 +28938,8 @@ var Header = function (_React$Component2) {
             return _react2.default.createElement(
                 "div",
                 { id: "header", style: divStyle },
-                _react2.default.createElement(HomeButton, { float: "left", text: "Home", store: this.props.store, changeWindowState: this.props.changeWindowState }),
-                _react2.default.createElement("input", { type: "text", placeholder: "Search Images...", onChange: this.handleSearchInputChange, value: this.state.searchInput, style: searchInputStyle }),
+                _react2.default.createElement(HomeButton, { float: "left", text: "Home", store: this.props.store, changeWindowState: this.props.changeWindowState, searchSubmitHandler: this.props.searchSubmitHandler }),
+                _react2.default.createElement("input", { type: "text", placeholder: "Search Images...", onChange: this.handleSearchInputChange, onKeyPress: this.handleSearchKeyPress, value: this.state.searchInput, style: searchInputStyle }),
                 _react2.default.createElement(
                     "button",
                     { style: searchButtonStyle },
@@ -29119,7 +29132,7 @@ var HomeButton = function (_React$Component5) {
             return _react2.default.createElement(
                 "button",
                 { style: hoverButtonStyle, onClick: function onClick() {
-                        _this7.props.changeWindowState('');
+                        _this7.props.changeWindowState('');_this7.props.searchSubmitHandler('');
                     }, onMouseOver: this.mouseOver, onMouseOut: this.mouseOut },
                 _react2.default.createElement(
                     "p",
@@ -29285,7 +29298,7 @@ var ImageBoard = function (_React$Component7) {
 
             var searchArray = [];
             var length = this.state.imagesArray.length;
-            var regex = new RegExp(this.state.searchSubmit);
+            var regex = new RegExp(this.state.searchSubmit, 'i');
             for (var x = 0; x < length; x++) {
                 if (regex.test(this.state.imagesArray[x].username) || regex.test(this.state.imagesArray[x].title)) {
                     searchArray.push(this.state.imagesArray[x]);
@@ -29422,7 +29435,7 @@ var UserImageBoard = function (_React$Component8) {
 
             var searchArray = [];
             var length = this.state.imagesArray.length;
-            var regex = new RegExp(this.state.searchSubmit);
+            var regex = new RegExp(this.state.searchSubmit, 'i');
             for (var x = 0; x < length; x++) {
                 if (regex.test(this.state.imagesArray[x].username) || regex.test(this.state.imagesArray[x].title)) {
                     searchArray.push(this.state.imagesArray[x]);
@@ -29630,7 +29643,8 @@ var AddImage = function (_React$Component9) {
                 display: 'inline-block',
                 position: 'relative',
                 top: '50%',
-                transform: 'translateY(-50%)'
+                transform: 'translateY(-50%)',
+                width: '100%'
             };
             var exitButtonStyle = {
                 display: 'inline-block',
@@ -30058,7 +30072,6 @@ var ImageWindow = function (_React$Component13) {
     _createClass(ImageWindow, [{
         key: "render",
         value: function render() {
-            var _imgStyle;
 
             if (this.props.showImageWindow == null) {
                 return null;
@@ -30078,14 +30091,15 @@ var ImageWindow = function (_React$Component13) {
             var modalStyle = _defineProperty({
                 backgroundColor: 'black',
                 borderRadius: 5,
-                width: 650,
+                minWidth: 400,
+                maxWidth: 650,
                 height: 540,
                 margin: 0,
                 position: 'fixed',
                 top: '45%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                textAlign: 'left',
+                textAlign: 'center',
                 zIndex: 100
             }, "borderRadius", 5);
 
@@ -30132,13 +30146,15 @@ var ImageWindow = function (_React$Component13) {
                 height: 40,
                 minWidth: 650
             };
-            var imgStyle = (_imgStyle = {
-                width: '100%',
-                minHeight: 150,
-                maxHeight: 800,
+            var imgStyle = {
+                maxWidth: '100%',
+                maxHeight: '100%',
                 flex: 1,
-                display: 'inline-block'
-            }, _defineProperty(_imgStyle, "flex", 1), _defineProperty(_imgStyle, "position", 'relative'), _defineProperty(_imgStyle, "top", '50%'), _defineProperty(_imgStyle, "transform", 'translateY(-50%)'), _imgStyle);
+                display: 'inline-block',
+                position: 'relative',
+                top: '50%',
+                transform: 'translateY(-50%)'
+            };
 
             return _react2.default.createElement(
                 "div",
