@@ -126,7 +126,8 @@ class AddImage extends React.Component{
             position: 'relative',
             top: '50%',
             transform: 'translateY(-50%)',
-            width: '100%'
+            width: '100%',
+            border: 'none'
         }
     var exitButtonStyle ={
         display:'inline-block',
@@ -142,7 +143,10 @@ class AddImage extends React.Component{
                     <button style={exitButtonStyle} onClick={this.props.addImageHandler}>X</button>
                     </div>
                     <div style={thumbnailStyle}>
-                        <img src={this.state.urlInput} style={imgStyle}/>
+                        {
+                            this.state.urlInput!='' &&
+                            <img src={this.state.urlInput} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} style={imgStyle}/>
+                        }
                     </div>
                     <div>
                         <input style={inputStyle} type="text" placeholder="Url" value={this.state.urlInput} onChange={this.handleUrlChange}/>

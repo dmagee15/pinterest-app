@@ -2860,7 +2860,8 @@ var AddImage = function (_React$Component) {
                 position: 'relative',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                width: '100%'
+                width: '100%',
+                border: 'none'
             };
             var exitButtonStyle = {
                 display: 'inline-block',
@@ -2885,7 +2886,9 @@ var AddImage = function (_React$Component) {
                 _react2.default.createElement(
                     "div",
                     { style: thumbnailStyle },
-                    _react2.default.createElement("img", { src: this.state.urlInput, style: imgStyle })
+                    this.state.urlInput != '' && _react2.default.createElement("img", { src: this.state.urlInput, onError: function onError(event) {
+                            return event.target.setAttribute("src", "/output/errorimage.png");
+                        }, style: imgStyle })
                 ),
                 _react2.default.createElement(
                     "div",
