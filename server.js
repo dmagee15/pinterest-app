@@ -8,7 +8,6 @@ var session = require('express-session');
 var bodyparser = require('body-parser');
 var flash = require('connect-flash');
 var path = require('path');
-var googleBooks = require('google-books-search');
 
 var app = express();
 require('dotenv').load();
@@ -36,7 +35,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-routes(app, passport, googleBooks);
+routes(app, passport);
 
 var port = process.env.PORT || 8080;
 app.listen(port,  function () {

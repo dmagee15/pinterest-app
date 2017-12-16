@@ -4,7 +4,7 @@ var path = process.cwd();
 var User = require('../models/users');
 var Image = require('../models/images');
 
-module.exports = function (app, passport, googleBooks) {
+module.exports = function (app, passport) {
 //Image.find({}).remove().exec();
 //Book.find({}).remove().exec();
 	function isLoggedIn (req, res, next) {
