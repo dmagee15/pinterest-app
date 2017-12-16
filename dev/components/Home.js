@@ -17,15 +17,11 @@ class Home extends React.Component{
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
-            console.log('pushing to homepage');
             if(Object.keys(j).length === 0){
-                console.log('fail initial login test');
                 this.setState({loginCheck:true});
             }
             else{
-                console.log(j);
                 this.props.store.loginUser(j.local);
-                console.log(this.props);
                 this.props.history.push('/main');
             }
 
@@ -96,15 +92,11 @@ class Welcome extends React.Component{
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
-            console.log('pushing to homepage');
             if(Object.keys(j).length === 0){
-                console.log('fail');
                 this.setState({loginFail:true});
             }
             else{
-                console.log(j);
                 this.props.store.loginUser(j);
-                console.log(this.props);
                 history.push('/main');
             }
 
@@ -123,15 +115,11 @@ class Welcome extends React.Component{
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
-            console.log('pushing to homepage');
             if(Object.keys(j).length === 0){
-                console.log('fail');
                 this.setState({loginFail:true});
             }
             else{
-                console.log(j);
                 this.props.store.loginUser(j);
-                console.log(this.props);
                 history.push('/main');
             }
 
@@ -152,14 +140,10 @@ class Welcome extends React.Component{
             return data.json();
         }).then((j) =>{
             if(Object.keys(j).length === 0){
-                console.log('fail');
                 this.setState({signupFail:true});
             }
             else{
-            console.log('pushing to homepage');
-            console.log(j);
             this.props.store.loginUser(j);
-            console.log(this.props);
             history.push('/main');
             }
         });
@@ -191,13 +175,11 @@ class Welcome extends React.Component{
         });
     }
     handleLoginButton = () => {
-        console.log('handleloginbutton');
         if(this.state.loginForm==false){
             this.setState({loginForm: true})
         }
     }
     handleSignupButton = () => {
-        console.log('handlesignupbutton');
         if(this.state.loginForm==true){
             this.setState({loginForm: false})
         }

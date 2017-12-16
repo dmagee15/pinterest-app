@@ -1,7 +1,6 @@
 'use strict';
 
 var path = process.cwd();
-var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
 var User = require('../models/users');
 var Image = require('../models/images');
 
@@ -15,8 +14,6 @@ module.exports = function (app, passport, googleBooks) {
 			res.redirect('/login');
 		}
 	}
-
-	var clickHandler = new ClickHandler();
 
 	app.route('/')
 		.get(function (req, res) {
@@ -71,7 +68,6 @@ module.exports = function (app, passport, googleBooks) {
 	app.get('/auth/twitter/callback', 
 	passport.authenticate('twitter', { failureRedirect: '/login' }),
 	function(req, res) {
-    // Successful authentication, redirect home.
     res.redirect('/');
 	});
 	app.get('/loginfail', function(req,res){
@@ -205,20 +201,6 @@ module.exports = function (app, passport, googleBooks) {
     });
     
     
-    
-    app.get('/getprofiledata', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.user.local.username);
-    	
-    	Book.find({'username':req.user.local.username}, function(err,data){
-    		if(err) throw err;
-    		console.log("username: "+req.user.local.username);
-    		console.log(JSON.stringify(data));
-    		res.send(data);
-    	});
-    	
-    });
-    
     app.get('/getimages', function(req,res){
     	console.log("Fetch request successful");
 
@@ -262,17 +244,6 @@ module.exports = function (app, passport, googleBooks) {
 			console.log("After logout: "+JSON.stringify(req.user));
 			res.end();
 		});
-		
-
-	app.route('/profile')
-		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/profile.html');
-		});
-
-	app.route('/api/:id')
-		.get(isLoggedIn, function (req, res) {
-			res.json(req.user.github);
-		});
 
 	app.route('/auth/twitter')
 		.get(passport.authenticate('twitter'));
@@ -283,8 +254,4 @@ module.exports = function (app, passport, googleBooks) {
 			failureRedirect: '/login'
 		}));
 
-	app.route('/api/:id/clicks')
-		.get(isLoggedIn, clickHandler.getClicks)
-		.post(isLoggedIn, clickHandler.addClick)
-		.delete(isLoggedIn, clickHandler.resetClicks);
 };

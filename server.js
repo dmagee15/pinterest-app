@@ -22,9 +22,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 
-app.use('/controllers', express.static(process.cwd() + '/app/controllers'));
 app.use('/public', express.static(process.cwd() + '/public'));
-app.use('/common', express.static(process.cwd() + '/app/common'));
 app.use('/dev', express.static(process.cwd() + '/dev'));
 app.use('/output', express.static(process.cwd() + '/output'));
 

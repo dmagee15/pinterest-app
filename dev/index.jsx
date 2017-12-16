@@ -1,4 +1,3 @@
-console.log("Script started");
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -7,10 +6,8 @@ import ReactRedux, {connect, Provider} from 'react-redux';
 import Redux, {createStore, bindActionCreators} from 'redux';
 import Home from "./components/Home.js";
 import Main from "./components/Main.js";
-import Login from "./components/Login.js";
 import Header from "./components/Header.js";
-import Profile from "./components/Profile.js";
-import AllBooks from "./components/AllBooks.js";
+
 
 const ADD = 'ADD';
 
@@ -78,7 +75,6 @@ class App extends React.Component{
     super(props);
     }
    render(){
-            console.log(this.props);
             return (
            <div>
             <Router>
@@ -121,4 +117,3 @@ ReactDOM.render(
     document.querySelector("#container")
     );
     
-console.log("script ended");
