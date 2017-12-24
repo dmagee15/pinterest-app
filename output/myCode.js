@@ -5221,6 +5221,7 @@ var Image = function (_React$Component) {
                 padding: 0,
                 verticalAlign: 'top',
                 boxShadow: '1px 1px 0px 0px #888888',
+                border: '1px solid #EDEDED',
                 overflow: 'hidden',
                 overflowX: 'hidden',
                 borderRadius: 5
