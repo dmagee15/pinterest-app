@@ -5217,7 +5217,7 @@ var Image = function (_React$Component) {
             var divStyle = {
                 display: 'inline-block',
                 width: 270,
-                margin: "10px 10px 10px 10px",
+                margin: "3px 3px 3px 3px",
                 padding: 0,
                 verticalAlign: 'top',
                 boxShadow: '1px 1px 0px 0px #888888',
