@@ -5294,7 +5294,8 @@ var Image = function (_React$Component) {
                 border: 'none',
                 margin: 0,
                 padding: 0,
-                display: 'inline-block'
+                display: 'inline-block',
+                backgroundColor: 'white'
 
             };
             var button = null;

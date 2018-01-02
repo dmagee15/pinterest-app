@@ -121,6 +121,7 @@ class Image extends React.Component{
             margin: 0,
             padding: 0,
             display: 'inline-block',
+            backgroundColor: 'white'
             
         }
         var button = null;
