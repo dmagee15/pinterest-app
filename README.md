@@ -11,7 +11,7 @@ User Stories
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
@@ -25,21 +25,21 @@ npm v3.10.10 or greater
 
 ### Installing
 
-Fork the repository and create a local copy
-
-```
 1. Click the fork button on the upper right hand corner of this repository.
-2. Open the command line, navigate to the directory of your choice.
-3. Enter 'git clone https://github.com/yourUsername/pinterest-app.git' where 'yourUsername' is your github username.
-```
-
-Install dependencies
+2. Open the command line, navigate to the directory of your choice and type:
 
 ```
-Type 'npm install' into the command line.
+git clone https://github.com/yourUsername/pinterest-app.git
 ```
 
-Create .env file in the local repository directory with the following contents:
+where 'yourUsername' is your github username.
+Afterwards, install the dependencies by entering the following in the project directory:
+
+```
+npm install
+```
+
+Create a new .env file in the local repository directory with the following contents:
 
 ```
 MONGO_URI=mongodb://localhost:27017/pinterestapp
@@ -49,10 +49,17 @@ TWITTER_KEY=(Your twitter key goes here)
 TWITTER_SECRET=(Your twitter secret goes here)
 ```
 
-Run MongoDB, start the server, and open app in browser window
+Run MongoDB in a separate command line window by navigating to where MongoDB
+is installed and enter the following:
 
 ```
-1. In a separate command line window, navigate to where MongoDB is installed and type 'mongod.exe'.
-2. In the other command line window, in the project directory, type 'node server.js'.
-3. In a browser, navigate to http://localhost:8080/ to open the app. 
+mongod.exe
 ```
+
+Start the server by navigating to the project directory and enter the following:
+
+```
+node server.js
+```
+
+You can then open the project in a browser by navigating to http://localhost:8080/
