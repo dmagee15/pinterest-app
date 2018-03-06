@@ -10,7 +10,7 @@ class Home extends React.Component{
     this.state = {
         loginCheck: false
     }
-    fetch('loginstatus', {
+/*    fetch('loginstatus', {
         method: 'GET',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
@@ -25,7 +25,7 @@ class Home extends React.Component{
                 this.props.history.push('/main');
             }
 
-        });
+        });*/
     }
     
    render(){
