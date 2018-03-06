@@ -29525,17 +29525,31 @@ var Home = function (_React$Component) {
 
         _this.state = {
             loginCheck: false
-        };
-
-        return _this;
+            /*    fetch('loginstatus', {
+                    method: 'GET',
+                    headers: {"Content-Type": "application/json"},
+                    credentials: 'include',
+                    }).then(function(data) {
+                        return data.json();
+                    }).then((j) =>{
+                        if(Object.keys(j).length === 0){
+                            this.setState({loginCheck:true});
+                        }
+                        else{
+                            this.props.store.loginUser(j.local);
+                            this.props.history.push('/main');
+                        }
+            
+                    });*/
+        };return _this;
     }
 
     _createClass(Home, [{
         key: "render",
         value: function render() {
-            if (this.state.loginCheck == false) {
-                return null;
-            }
+            /*       if(this.state.loginCheck==false){
+                       return null;
+                   }*/
             var blackBack = {
                 padding: 0,
                 margin: 0,

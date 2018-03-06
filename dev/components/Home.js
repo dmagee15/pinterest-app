@@ -10,13 +10,28 @@ class Home extends React.Component{
     this.state = {
         loginCheck: false
     }
+/*    fetch('loginstatus', {
+        method: 'GET',
+        headers: {"Content-Type": "application/json"},
+        credentials: 'include',
+        }).then(function(data) {
+            return data.json();
+        }).then((j) =>{
+            if(Object.keys(j).length === 0){
+                this.setState({loginCheck:true});
+            }
+            else{
+                this.props.store.loginUser(j.local);
+                this.props.history.push('/main');
+            }
 
+        });*/
     }
     
    render(){
-       if(this.state.loginCheck==false){
+/*       if(this.state.loginCheck==false){
            return null;
-       }
+       }*/
         var blackBack = {
                 padding:0,
 				margin:0,
