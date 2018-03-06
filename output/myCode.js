@@ -29525,22 +29525,23 @@ var Home = function (_React$Component) {
 
         _this.state = {
             loginCheck: false
-        };
-        fetch('loginstatus', {
-            method: 'GET',
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include'
-        }).then(function (data) {
-            return data.json();
-        }).then(function (j) {
-            if (Object.keys(j).length === 0) {
-                _this.setState({ loginCheck: true });
-            } else {
-                _this.props.store.loginUser(j.local);
-                _this.props.history.push('/main');
-            }
-        });
-        return _this;
+            /*    fetch('loginstatus', {
+                    method: 'GET',
+                    headers: {"Content-Type": "application/json"},
+                    credentials: 'include',
+                    }).then(function(data) {
+                        return data.json();
+                    }).then((j) =>{
+                        if(Object.keys(j).length === 0){
+                            this.setState({loginCheck:true});
+                        }
+                        else{
+                            this.props.store.loginUser(j.local);
+                            this.props.history.push('/main');
+                        }
+            
+                    });*/
+        };return _this;
     }
 
     _createClass(Home, [{
