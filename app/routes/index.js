@@ -5,8 +5,7 @@ var User = require('../models/users');
 var Image = require('../models/images');
 
 module.exports = function (app, passport) {
-//Image.find({}).remove().exec();
-//Book.find({}).remove().exec();
+
 	function isLoggedIn (req, res, next) {
 		if (req.isAuthenticated()) {
 			return next();
@@ -21,15 +20,13 @@ module.exports = function (app, passport) {
 		});
 		
 	app.post('/createnewuser', passport.authenticate('local-signup',{ failureRedirect: '/signupfail', failureFlash: false }), function(req,res){
-		console.log("authentication successful");
-		console.log(req.body.email);
+
 		User.findOneAndUpdate({'local.username':req.body.username},{'local.email':req.body.email},{new:true}, function(err,data){
 			if(err)throw err;
 			var userData = {
 				email: data.local.email,
 				username: data.local.username
 			};
-			console.log("USER DATA: "+JSON.stringify(userData));
 			res.send(userData);
 		});
 	});
@@ -38,19 +35,15 @@ module.exports = function (app, passport) {
 
 		User.find({'local.username':req.user.local.username}, function(err,data){
 			if(err)throw err;
-			console.log(JSON.stringify(data));
 			var userData = {
 				email: req.user.local.email,
 				username: req.user.local.username,
 			};
-			console.log("USER DATA: "+JSON.stringify(req.user));
 			res.send(userData);
 		});
 	});
 	app.get('/loginstatus', function(req,res){
-		console.log("LOGIN STATUS");
-		console.log(req.user);
-		console.log("undefined: "+(req.user==undefined));
+
 		if(req.user==undefined){
 			res.send({});
 		}
@@ -59,7 +52,6 @@ module.exports = function (app, passport) {
 		}
 	});
 	app.get('/twitterlogin', passport.authenticate('twitter', { failureRedirect: '/loginfail', failureFlash: false }), function(req,res){
-		console.log(req.user);
 		res.send(req.user);
 	});
 	app.get('/auth/twitter',
@@ -80,19 +72,14 @@ module.exports = function (app, passport) {
 	});
     
     app.post('/test', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body);
+
     	res.send(req.body);
     });
     
     app.post('/addimage', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.url);
 		
 		var newImage = new Image();
-//		newImage.url = req.body.url.replace(/http/,'https');
 		newImage.url = req.body.url;
-		console.log(newImage.url);
 		newImage.title = req.body.title;
 		newImage.username = req.user.local.username;
 		newImage.pinusers = [req.user.local.username];
@@ -101,7 +88,6 @@ module.exports = function (app, passport) {
 			if(err) throw err;
 			Image.find({}, function(err,data){
 				if(err) throw err;
-				console.log(data);
 				res.send(data);
 			})
 		})
@@ -110,13 +96,9 @@ module.exports = function (app, passport) {
     });
     
     app.post('/adduserimage', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.url);
 		
 		var newImage = new Image();
-//		newImage.url = req.body.url.replace(/http/,'https');
 		newImage.url = req.body.url;
-		console.log(newImage.url);
 		newImage.title = req.body.title;
 		newImage.username = req.user.local.username;
 		newImage.pinusers = [req.user.local.username];
@@ -125,7 +107,6 @@ module.exports = function (app, passport) {
 			if(err) throw err;
 			Image.find({'username':req.user.local.username}, function(err,data){
 				if(err) throw err;
-				console.log(data);
 				res.send(data);
 			})
 		})
@@ -134,12 +115,9 @@ module.exports = function (app, passport) {
     });
     
     app.post('/pinimage', function(req,res){
-    	console.log("Fetch request successful");
-    	console.log(req.body.id);
 
 			Image.find({'_id':req.body.id}, function(err,data){
 				if(err) throw err;
-				console.log(data);
 				if(data[0].pinusers.indexOf(req.user.local.username)==-1){
 					Image.findOneAndUpdate({'_id':req.body.id},{$push: {pinusers: req.user.local.username}},{new:true}, function(err,data){
 						if(err) throw err;
@@ -160,8 +138,7 @@ module.exports = function (app, passport) {
 				else{
 					Image.findOneAndUpdate({'_id':req.body.id},{$pull: {pinusers: req.user.local.username}},{new:true}, function(err,data){
 						if(err) throw err;
-						console.log("pull data");
-						console.log(data);
+
 						if(data.pinusers.length==0){
 							Image.find({'_id':req.body.id}).remove().exec(function(err,data){
 								if(err) throw err;
@@ -202,22 +179,18 @@ module.exports = function (app, passport) {
     
     
     app.get('/getimages', function(req,res){
-    	console.log("Fetch request successful");
 
     	Image.find({}, function(err,data){
     		if(err) throw err;
-    		console.log(JSON.stringify(data));
     		res.send(data);
     	});
     	
     });
     
     app.post('/getuserimages', function(req,res){
-    	console.log("GET USER IMAGES");
-		console.log(req.body.user);
+
     	Image.find({'pinusers':req.body.user}, function(err,data){
     		if(err) throw err;
-    		console.log(JSON.stringify(data));
     		res.send(data);
     	});
     	
@@ -227,7 +200,6 @@ module.exports = function (app, passport) {
     app.post('/data', function(req,res){
     	User.find({},function(err,data){
     		if(err)throw err;
-    		console.log(data[0]);
     	});
     	res.end();
     });
@@ -239,9 +211,7 @@ module.exports = function (app, passport) {
 
 	app.route('/logout')
 		.get(function (req, res) {
-			console.log("Before logout: "+JSON.stringify(req.user));
 			req.logout();
-			console.log("After logout: "+JSON.stringify(req.user));
 			res.end();
 		});
 
