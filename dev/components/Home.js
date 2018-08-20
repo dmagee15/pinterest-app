@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, withRouter, Route, Switch, Link, IndexRoute, Redirect} from 'react-router-dom';
 import ReactRedux, {connect, Provider} from 'react-redux';
 import Redux, {createStore, bindActionCreators} from 'redux';
+import './../css/Home.css';
 
 class Home extends React.Component{
     constructor(props) {
@@ -10,52 +11,13 @@ class Home extends React.Component{
     this.state = {
         loginCheck: false
     }
-/*    fetch('loginstatus', {
-        method: 'GET',
-        headers: {"Content-Type": "application/json"},
-        credentials: 'include',
-        }).then(function(data) {
-            return data.json();
-        }).then((j) =>{
-            if(Object.keys(j).length === 0){
-                this.setState({loginCheck:true});
-            }
-            else{
-                this.props.store.loginUser(j.local);
-                this.props.history.push('/main');
-            }
-
-        });*/
     }
     
    render(){
-/*       if(this.state.loginCheck==false){
-           return null;
-       }*/
-        var blackBack = {
-                padding:0,
-				margin:0,
-				minWidth: '100%',
-				height: '100vh',
-				backgroundColor: 'black',
-				overflow: 'hidden'
-        };
-        var divStyle = {
-					padding:0,
-					margin:0,
-					minWidth: '100%',
-					height: '100vh',
-					backgroundImage:'url(/output/luca-zanon-26595.jpg)',
-					backgroundPosition: 'center center',
-					backgroundSize: 'cover',
-					backgroundAttachment: 'fixed',
-					filter: 'blur(5px)',
-					overflow: 'hidden'
-					};
             return (
                 <div>
-                <div style={blackBack}>
-                    <div style={divStyle}>
+                <div className="blackBack">
+                    <div className="backStyle">
                     </div>
                 </div>
                 <Welcome store={this.props.store}/>
