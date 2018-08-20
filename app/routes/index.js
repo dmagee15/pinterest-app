@@ -224,4 +224,8 @@ module.exports = function (app, passport) {
 			failureRedirect: '/login'
 		}));
 
+		app.get('*', function (req, res){
+			res.sendFile(path + '/dev/index.html');
+		  })
+
 };
