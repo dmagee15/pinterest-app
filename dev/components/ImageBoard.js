@@ -57,7 +57,6 @@ class ImageBoard extends React.Component{
         });
     }
     addImageDataHandler = (url, title) => {
-        this.addImageHandler();
         fetch('/addimage', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
@@ -68,6 +67,7 @@ class ImageBoard extends React.Component{
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
+            this.addImageHandler();
             var imagesArray = j.slice();
             this.setState({imagesArray});
 

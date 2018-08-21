@@ -16,9 +16,9 @@ class Welcome extends React.Component{
         signupFail: false
         }
     }
-    loginGuest = (history) => {
+    loginGuest = () => {
 
-        history.push('/main');
+        this.props.history.push('/main');
     }
     loginTwitter = () => {
         fetch('/auth/twitter', {
