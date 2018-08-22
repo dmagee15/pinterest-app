@@ -77,7 +77,6 @@ class ImageBoard extends React.Component{
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
-            console.log(j);
             this.addImageHandler();
             var imagesArray = j.slice();
             this.setState({imagesArray});
