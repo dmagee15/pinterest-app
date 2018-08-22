@@ -3,6 +3,8 @@
 var path = process.cwd();
 var User = require('../models/users');
 var Image = require('../models/images');
+var fs = require('fs');
+var request = require('request');
 
 module.exports = function (app, passport) {
 
@@ -77,42 +79,45 @@ module.exports = function (app, passport) {
     });
     
     app.post('/addimage', function(req,res){
+			request({
+				url: req.body.url,
+				encoding: 'binary'
+			  }, function(error, response, body) {
+				if (!error && response.statusCode === 200) {
+					   body = new Buffer(body, 'binary');
+	  
+					var newImage = new Image();
+					newImage.url = req.body.url;
+					newImage.title = req.body.title;
+					newImage.username = req.user.local.username;
+					newImage.pinusers = [req.user.local.username];
+					newImage.contentType = 'image/png';
+					newImage.data = body;
+					newImage.save(function(err){
+						if(err) throw err;
+						if(req.body.user){
+							Image.find({'username':req.user.local.username}, function(err,data){
+								if(err) throw err;
+								res.send(data);
+							})
+						}
+						else{
+							Image.find({}, function(err,data){
+								if(err) throw err;
+								res.send(data);
+							})
+						}
+					})
+				}
+				else{
+					res.send(null);
+				}
+			   });
 		
-		var newImage = new Image();
-		newImage.url = req.body.url;
-		newImage.title = req.body.title;
-		newImage.username = req.user.local.username;
-		newImage.pinusers = [req.user.local.username];
-		
-		newImage.save(function(err){
-			if(err) throw err;
-			Image.find({}, function(err,data){
-				if(err) throw err;
-				res.send(data);
-			})
-		})
 			
     	
-    });
-    
-    app.post('/adduserimage', function(req,res){
-		
-		var newImage = new Image();
-		newImage.url = req.body.url;
-		newImage.title = req.body.title;
-		newImage.username = req.user.local.username;
-		newImage.pinusers = [req.user.local.username];
-		
-		newImage.save(function(err){
-			if(err) throw err;
-			Image.find({'username':req.user.local.username}, function(err,data){
-				if(err) throw err;
-				res.send(data);
-			})
-		})
-			
-    	
-    });
+	});
+	
     
     app.post('/pinimage', function(req,res){
 
@@ -178,21 +183,19 @@ module.exports = function (app, passport) {
     });
     
     
-    app.get('/getimages', function(req,res){
-
-    	Image.find({}, function(err,data){
-    		if(err) throw err;
-    		res.send(data);
-    	});
-    	
-    });
-    
-    app.post('/getuserimages', function(req,res){
-
-    	Image.find({'pinusers':req.body.user}, function(err,data){
-    		if(err) throw err;
-    		res.send(data);
-    	});
+    app.post('/getimages', function(req,res){
+		if(req.body.user){
+			Image.find({'pinusers':req.body.user}, function(err,data){
+				if(err) throw err;
+				res.send(data);
+			});
+		}
+		else{
+			Image.find({}, function(err,data){
+				if(err) throw err;
+				res.send(data);
+			});
+		}
     	
     });
     

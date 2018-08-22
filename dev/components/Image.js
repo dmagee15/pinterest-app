@@ -124,7 +124,9 @@ class Image extends React.Component{
             backgroundColor: 'white'
             
         }
+        var buf = new Buffer(this.props.image.data).toString('base64');
         var button = null;
+
         if(this.props.store.user.authenticated==false){
             button = <div style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48.png"/></div>;
         }
@@ -137,8 +139,8 @@ class Image extends React.Component{
             return (
                 <div style={divStyle} className="grid-item">
                 <div style={thumbnailStyle}>
-                    <button style={imageButtonStyle} onClick={()=>{this.props.openImageWindow(this.props.image.url)}}>
-                    <img src={this.props.image.url} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} style={imgStyle} />
+                    <button style={imageButtonStyle} onClick={()=>{this.props.openImageWindow("data:image/png;base64,"+buf)}}>
+                    <img src={"data:image/png;base64,"+buf} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} style={imgStyle} />
                     </button>
                 </div>
                 <div style={divContentStyle}>

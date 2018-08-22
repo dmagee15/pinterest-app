@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, withRouter, Route, Switch, Link, IndexRoute, Redirect} from 'react-router-dom';
 import ReactRedux, {connect, Provider} from 'react-redux';
 import Redux, {createStore, bindActionCreators} from 'redux';
+import ReactLoading from 'react-loading';
 import './../css/AddImage.css';
 
 class AddImage extends React.Component{
@@ -10,7 +11,7 @@ class AddImage extends React.Component{
     super(props);
     this.state = {
         urlInput: '',
-        titleInput: '',
+        titleInput: ''
         }
     }
     handleUrlChange = (event) => {
@@ -25,11 +26,15 @@ class AddImage extends React.Component{
     }
     handleSubmit = () => {
         this.props.addImageDataHandler(this.state.urlInput,this.state.titleInput);
-        this.setState({urlInput: '',titleInput: ''});
+        this.setState({urlInput: '',titleInput: '', loading: true});
     }
 
     render(){
+    let loadingImage = (this.props.loadingImage)?(
+    <div className="loadingDivStyle"><ReactLoading /></div>
+    ):null;
         
+
     if(this.props.visible==false){
         return null;
     }
@@ -44,6 +49,7 @@ class AddImage extends React.Component{
                             this.state.urlInput!='' &&
                             <img src={this.state.urlInput} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} className="previewImgStyle" />
                         }
+                        { loadingImage }
                     </div>
                     <div>
                         <input className="addInputStyle" type="text" placeholder="Url" value={this.state.urlInput} onChange={this.handleUrlChange}/>

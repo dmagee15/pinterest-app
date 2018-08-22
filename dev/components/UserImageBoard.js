@@ -18,9 +18,10 @@ class UserImageBoard extends React.Component{
             addimage: false,
             imagesArray: [],
             searchSubmit: '',
-            showImageWindow: null
+            showImageWindow: null,
+            loadingImage: false
         }
-        fetch('/getuserimages', {
+        fetch('/getimages', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
@@ -35,7 +36,7 @@ class UserImageBoard extends React.Component{
         });
     }
     componentWillReceiveProps(nextProps) {
-        fetch('/getuserimages', {
+        fetch('/getimages', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
@@ -47,6 +48,11 @@ class UserImageBoard extends React.Component{
             var imagesArray = j.slice();
             this.setState({imagesArray});
 
+        });
+    }
+    loadingImageHandler = (value) =>{
+        this.setState({
+            loadingImage: value
         });
     }
     closeImageWindow = () => {
@@ -74,23 +80,28 @@ class UserImageBoard extends React.Component{
         });
     }
     addImageDataHandler = (url, title) => {
-        this.addImageHandler();
-        fetch('/adduserimage', {
+        this.loadingImageHandler(true);
+        fetch('/addimage', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
         body: JSON.stringify({"url":url,
-            "title":title
+            "title":title,
+            "user": true
         })
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
+            this.addImageHandler();
             var imagesArray = j.slice();
             this.setState({imagesArray});
 
+        }).catch((err) =>{
+            this.addImageHandler();
         });
     }
     addImageHandler = () => {
+        this.loadingImageHandler(false);
         this.setState({addimage: !this.state.addimage});
     }
    render(){
@@ -130,7 +141,7 @@ class UserImageBoard extends React.Component{
                 >
                     {display}
                 </Masonry>
-                <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
+                <AddImage visible={this.state.addimage} loadingImage={this.state.loadingImage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
                 <ImageWindow showImageWindow={this.state.showImageWindow} closeWindow={this.closeImageWindow}/>
                </div>
                

@@ -24,6 +24,15 @@
     height: 340px;
     background-color: #E8E8E8;
     display: inline-block;
+    position: relative;
+}
+.loadingDivStyle{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
 }
 .previewImgStyle{
     max-height: 340px;

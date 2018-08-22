@@ -18,12 +18,15 @@ class ImageBoard extends React.Component{
             addimage: false,
             imagesArray: [],
             searchSubmit: '',
-            showImageWindow: null
+            showImageWindow: null,
+            loadingImage: false
         }
         fetch('/getimages', {
-        method: 'GET',
+        method: 'POST',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
+        body: JSON.stringify({"user":null,
+        })
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
@@ -41,6 +44,11 @@ class ImageBoard extends React.Component{
     searchSubmitHandler = (term) => {
         this.setState({searchSubmit: term});
     }
+    loadingImageHandler = (value) =>{
+        this.setState({
+            loadingImage: value
+        });
+    }
     pinImageHandler = (id) => {
         fetch('/pinimage', {
         method: 'POST',
@@ -57,23 +65,29 @@ class ImageBoard extends React.Component{
         });
     }
     addImageDataHandler = (url, title) => {
+        this.loadingImageHandler(true);
         fetch('/addimage', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         credentials: 'include',
         body: JSON.stringify({"url":url,
-            "title":title
+            "title":title,
+            "user": null
         })
         }).then(function(data) {
             return data.json();
         }).then((j) =>{
+            console.log(j);
             this.addImageHandler();
             var imagesArray = j.slice();
             this.setState({imagesArray});
 
+        }).catch((err) =>{
+            this.addImageHandler();
         });
     }
     addImageHandler = () => {
+        this.loadingImageHandler(false);
         this.setState({addimage: !this.state.addimage});
     }
    render(){
@@ -104,16 +118,16 @@ class ImageBoard extends React.Component{
                 <Header store={this.props.store} changeWindowState={this.props.changeWindowState} searchSubmitHandler={this.searchSubmitHandler}/>
                <div style={divStyle}>
                     <Masonry
-                className={'my-gallery-class'} // default ''
-                elementType={'ul'} // default 'div'
+                className={'my-gallery-class'}
+                elementType={'ul'} 
                 options={{itemSelector: '.grid-item',
-                columnWidth: 290}} // default {}
-                disableImagesLoaded={false} // default false
-                updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+                columnWidth: 290}}
+                disableImagesLoaded={false}
+                updateOnEachImageLoad={false}
                 >
                     {display}
                 </Masonry>
-                <AddImage visible={this.state.addimage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
+                <AddImage visible={this.state.addimage} loadingImage={this.state.loadingImage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
                 <ImageWindow showImageWindow={this.state.showImageWindow} closeWindow={this.closeImageWindow}/>
                </div>
                </div>
