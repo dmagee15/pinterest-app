@@ -39,7 +39,6 @@ class Image extends React.Component{
         }
         var imgStyle = {
             width: '100%',
-            minHeight: 150,
             flex: 1,
             display:'inline-block'
         }

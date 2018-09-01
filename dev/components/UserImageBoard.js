@@ -108,6 +108,7 @@ class UserImageBoard extends React.Component{
    render(){
             const breakpointColumnsObj = {
                 default: 5,
+                1500: 5,
                 1250: 4,
                 1100: 3,
                 700: 2
