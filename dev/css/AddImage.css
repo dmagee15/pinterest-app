@@ -3,6 +3,7 @@
     border-radius: 5px;
     width: 450px;
     height: 540px;
+    max-width: 100%;
     margin: 0;
     position: fixed;
     top: 50%;
