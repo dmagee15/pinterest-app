@@ -9,7 +9,8 @@ import BoardInfoMenu from './BoardInfoMenu.js';
 import ImageWindow from './ImageWindow.js';
 import UserBoardInfoMenu from './UserBoardInfoMenu.js';
 import Header from './Header.js';
-import Masonry from 'react-masonry-component';
+import './../css/ImageBoard.css';
+import Masonry from 'react-masonry-css';
 
 class ImageBoard extends React.Component{
     constructor(props) {
@@ -90,6 +91,12 @@ class ImageBoard extends React.Component{
         this.setState({addimage: !this.state.addimage});
     }
    render(){
+            const breakpointColumnsObj = {
+                default: 5,
+                1250: 4,
+                1100: 3,
+                700: 2
+            };
             var searchArray = [];
             var length = this.state.imagesArray.length;
             var regex = new RegExp(this.state.searchSubmit,'i');
@@ -105,26 +112,24 @@ class ImageBoard extends React.Component{
 		        <div>
 		            <BoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store}/>
 		            {images}
-		        </div>;
+                </div>;
+            images.unshift(<BoardInfoMenu addImageHandler={this.addImageHandler} store={this.props.store}/>);
             
             var divStyle = {
                 width: '100%',
                 height: '100vh',
-                paddingTop: 60
+                paddingTop: 0
             }
             return (
                 <div>
                 <Header store={this.props.store} changeWindowState={this.props.changeWindowState} searchSubmitHandler={this.searchSubmitHandler}/>
                <div style={divStyle}>
                     <Masonry
-                className={'my-gallery-class'}
-                elementType={'ul'} 
-                options={{itemSelector: '.grid-item',
-                columnWidth: 290}}
-                disableImagesLoaded={false}
-                updateOnEachImageLoad={false}
+                breakpointCols={breakpointColumnsObj}
+                className="my-masonry-grid"
+                columnClassName="my-masonry-grid_column"
                 >
-                    {display}
+                    {images}
                 </Masonry>
                 <AddImage visible={this.state.addimage} loadingImage={this.state.loadingImage} addImageHandler={this.addImageHandler} addImageDataHandler={this.addImageDataHandler}/>
                 <ImageWindow showImageWindow={this.state.showImageWindow} closeWindow={this.closeImageWindow}/>

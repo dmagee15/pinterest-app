@@ -4,6 +4,7 @@ import { BrowserRouter as Router, withRouter, Route, Switch, Link, IndexRoute, R
 import ReactRedux, {connect, Provider} from 'react-redux';
 import Redux, {createStore, bindActionCreators} from 'redux';
 import AddImage from './AddImage.js';
+import './../css/Image.css';
 
 class Image extends React.Component{
     constructor(props) {
@@ -35,19 +36,6 @@ class Image extends React.Component{
         var titleContainerStyle = {
             width: '100%',
             textAlign: 'center'
-        }
-        var divStyle = {
-            display: 'inline-block',
-            width: 270,
-            margin: "3px 3px 3px 3px",
-            padding:0,
-            verticalAlign: 'top',
-            boxShadow: '1px 1px 0px 0px #888888',
-            borderLeft: '1px solid #EDEDED',
-            borderBottom: '1px solid #EDEDED',
-            overflow: 'hidden',
-            overflowX: 'hidden',
-            borderRadius: 5
         }
         var imgStyle = {
             width: '100%',
@@ -137,7 +125,7 @@ class Image extends React.Component{
             button = <button onClick={() => {this.props.pinImageHandler(this.props.image._id)}} style={searchButtonStyle}><img style={searchIconStyle} src="/output/iconmonstr-pin-23-48 (1).png"/></button>;
         }
             return (
-                <div style={divStyle} className="grid-item">
+                <div className="grid-item imageContainer">
                 <div style={thumbnailStyle}>
                     <button style={imageButtonStyle} onClick={()=>{this.props.openImageWindow("data:image/png;base64,"+buf)}}>
                     <img src={"data:image/png;base64,"+buf} onError={(event)=>event.target.setAttribute("src","/output/errorimage.png")} style={imgStyle} />

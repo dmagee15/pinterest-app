@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, withRouter, Route, Switch, Link, IndexRoute, Redirect} from 'react-router-dom';
 import ReactRedux, {connect, Provider} from 'react-redux';
 import Redux, {createStore, bindActionCreators} from 'redux';
+import './../css/BoardInfoMenu.css';
 
 class BoardInfoMenu extends React.Component{
     constructor(props) {
@@ -11,17 +12,6 @@ class BoardInfoMenu extends React.Component{
     
     render(){
 
-        var divStyle = {
-            display: 'inline-block',
-            width: 270,
-            margin: "10px 10px 10px 10px",
-            padding:0,
-            verticalAlign: 'top',
-            overflow: 'hidden',
-            overflowX: 'hidden',
-            borderRadius: 5,
-            textAlign: 'center'
-        }
         var h1Style = {
             display:'inline-block',
             color: 'darkred',
@@ -44,14 +34,14 @@ class BoardInfoMenu extends React.Component{
         };
         if(this.props.store.user.username==''){
             return (
-                <div style={divStyle} className="grid-item">
+                <div className="grid-item boardInfoMenu">
                     <h1 style={h1Style}>Browsing All Images</h1>
                 </div>
                 );
         }
         else{
             return (
-                <div style={divStyle} className="grid-item">
+                <div className="grid-item boardInfoMenu">
                     <h1 style={h1Style}>Browsing All Images</h1>
                     <button style={addImageButtonStyle} onClick={this.props.addImageHandler}>Add Image</button>
                 </div>

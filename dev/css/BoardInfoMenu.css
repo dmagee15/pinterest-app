@@ -1,0 +1,21 @@
+.boardInfoMenu{
+    width: 270px;
+    margin: 10px 10px 10px 10px;
+    padding: 0 0 30px 0;
+    vertical-align: top;
+    overflow: hidden;
+    overflow-x: hidden;
+    border-radius: 5px;
+    text-align: center;
+}
+@media (max-width: 1000px){
+    .boardInfoMenu{
+        width: 200px;
+    }
+}
+@media (max-width: 500px){
+    .boardInfoMenu{
+        width: 180px;
+        margin: 0;
+    }
+}

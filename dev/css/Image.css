@@ -1,0 +1,22 @@
+.imageContainer{
+    width: 230px;
+    margin: 15px auto 15px auto;
+    padding:0;
+    vertical-align: top;
+    box-shadow: 2px 5px 10px #888888;
+    border-left: 1px solid #EDEDED;
+    border-bottom: 1px solid #EDEDED;
+    overflow: hidden;
+    overflow-x: hidden;
+    border-radius: 5px;
+}
+@media (max-width: 1000px){
+    .imageContainer{
+        width: 200px;
+    }
+}
+@media (max-width: 500px){
+    .imageContainer{
+        width: 180px;
+    }
+}
